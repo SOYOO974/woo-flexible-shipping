@@ -12,6 +12,14 @@
 	padding-top: 15px !important;
 }
 
+/* Force method description textarea width to 400px matching WooCommerce text inputs */
+.woocommerce table.form-table textarea[name*="method_description"],
+.woocommerce table.form-table textarea#woocommerce_soyoo_table_rate_method_description {
+	width: 400px !important;
+	max-width: 100%;
+	height: 65px;
+}
+
 .wfs-table-editor-container {
 	margin-top: 5px;
 	width: 100%;

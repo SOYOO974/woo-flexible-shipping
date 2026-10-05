@@ -47,10 +47,16 @@ class Migrator {
 
 			$report['zones_scanned']++;
 
+			$zone_obj = new \WC_Shipping_Zone( $zone_id );
+
 			foreach ( $methods as $method ) {
 				$instance_id = $method->instance_id ?? 0;
 				$method_id   = $method->id ?? ( $method->method_id ?? '' );
 				if ( ! $instance_id ) {
+					continue;
+				}
+
+				if ( 'soyoo_table_rate' === $method_id ) {
 					continue;
 				}
 
@@ -82,8 +88,7 @@ class Migrator {
 					continue;
 				}
 
-				$fs_enabled = $settings['wfs_calculation_enabled'] ?? ( $settings['fs_calculation_enabled'] ?? 'no' );
-				$raw_rules  = $settings['wfs_method_rules'] ?? ( $settings['fs_method_rules'] ?? ( $settings['method_rules'] ?? ( $settings['rules'] ?? '' ) ) );
+				$raw_rules = $settings['wfs_method_rules'] ?? ( $settings['fs_method_rules'] ?? ( $settings['method_rules'] ?? ( $settings['rules'] ?? '' ) ) );
 
 				if ( empty( $raw_rules ) || '[]' === $raw_rules ) {
 					continue;
@@ -94,14 +99,81 @@ class Migrator {
 					continue;
 				}
 
-				$settings['wfs_calculation_enabled'] = 'yes';
-				$settings['wfs_method_rules']        = json_encode( $normalized_rules, JSON_UNESCAPED_UNICODE );
+				$method_title       = $method->title ?? ( $settings['title'] ?? ( $settings['method_title'] ?? 'Table Rate' ) );
+				$method_description = $settings['method_description'] ?? ( $settings['description'] ?? '' );
 
-				if ( $found_key ) {
-					update_option( $found_key, $settings );
+				if ( 'flexible_shipping_single' === $method_id || 'flexible_shipping' === $method_id ) {
+					// Query old method order in zone database table.
+					global $wpdb;
+					$old_order = 0;
+					if ( isset( $wpdb->prefix ) ) {
+						$old_order = (int) $wpdb->get_var( $wpdb->prepare(
+							"SELECT method_order FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE instance_id = %d",
+							$instance_id
+						) );
+					}
+
+					// Standalone Octolize method: Add a new native Soyoo Table Rate method to the shipping zone.
+					$new_instance_id = $zone_obj->add_shipping_method( 'soyoo_table_rate' );
+					if ( $new_instance_id ) {
+						$new_option_key = 'woocommerce_soyoo_table_rate_' . $new_instance_id . '_settings';
+						$new_settings   = array(
+							'title'              => $method_title,
+							'method_description' => $method_description,
+							'tax_status'         => $settings['tax_status'] ?? ( $settings['tax_heading'] ?? 'taxable' ),
+							'cost'               => '0.00',
+							'wfs_method_rules'   => json_encode( $normalized_rules, JSON_UNESCAPED_UNICODE ),
+						);
+						update_option( $new_option_key, $new_settings );
+
+						// Position the new method directly below the old method.
+						if ( isset( $wpdb->prefix ) && $old_order > 0 ) {
+							$table_name = $wpdb->prefix . 'woocommerce_shipping_zone_methods';
+							$wpdb->query( $wpdb->prepare(
+								"UPDATE {$table_name} SET method_order = method_order + 1 WHERE zone_id = %d AND method_order > %d",
+								$zone_id,
+								$old_order
+							) );
+							$wpdb->update(
+								$table_name,
+								array( 'method_order' => $old_order + 1 ),
+								array( 'instance_id' => $new_instance_id )
+							);
+						}
+					}
+
+					// Disable original Octolize method in WooCommerce shipping zone methods database table.
+					if ( isset( $wpdb->prefix ) ) {
+						$wpdb->update(
+							$wpdb->prefix . 'woocommerce_shipping_zone_methods',
+							array( 'is_enabled' => 0 ),
+							array( 'instance_id' => $instance_id )
+						);
+					}
+
+					// Disable original Octolize method in options and append [OLD - Octolize] tag.
+					$settings['enabled']                 = 'no';
+					$settings['wfs_calculation_enabled'] = 'no';
+					$old_prefix                          = '[OLD - Octolize] ';
+					if ( isset( $settings['title'] ) && strpos( $settings['title'], $old_prefix ) === false ) {
+						$settings['title'] = $old_prefix . $settings['title'];
+					}
+					if ( isset( $settings['method_title'] ) && strpos( $settings['method_title'], $old_prefix ) === false ) {
+						$settings['method_title'] = $old_prefix . $settings['method_title'];
+					}
+
+					if ( $found_key ) {
+						update_option( $found_key, $settings );
+					}
+				} else {
+					// Flat Rate extension (e.g. conforama.re)
+					$settings['wfs_calculation_enabled'] = 'yes';
+					$settings['wfs_method_rules']        = json_encode( $normalized_rules, JSON_UNESCAPED_UNICODE );
+
+					if ( $found_key ) {
+						update_option( $found_key, $settings );
+					}
 				}
-
-				$method_title = $method->title ?? ( $settings['title'] ?? ( $settings['method_title'] ?? 'Flat Rate' ) );
 
 				$report['methods_migrated']++;
 				$report['details'][] = array(

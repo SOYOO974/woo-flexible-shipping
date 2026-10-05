@@ -185,6 +185,11 @@ class FlatRateExtension {
 
 			$rate->add_meta_data( 'fs_costs', json_encode( $breakdown, JSON_UNESCAPED_UNICODE ) );
 			$rate->add_meta_data( '_table_rate_costs', json_encode( $breakdown, JSON_UNESCAPED_UNICODE ) );
+
+			$description = $settings['method_description'] ?? '';
+			if ( ! empty( $description ) ) {
+				$rate->add_meta_data( 'method_description', $description );
+			}
 		}
 
 		return $rates;

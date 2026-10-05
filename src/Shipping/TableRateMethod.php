@@ -62,7 +62,15 @@ class TableRateMethod extends \WC_Shipping_Method {
 				'default'     => __( 'Soyoo Table Rate', 'woo-flexible-shipping' ),
 				'desc_tip'    => true,
 			),
-			'tax_status' => array(
+			'method_description' => array(
+				'title'       => __( 'Method Description', 'woo-flexible-shipping' ),
+				'type'        => 'textarea',
+				'description' => __( 'Optional description displayed to customers below the shipping method name on checkout.', 'woo-flexible-shipping' ),
+				'default'     => '',
+				'desc_tip'    => true,
+				'css'         => 'width: 400px; height: 65px;',
+			),
+			'tax_status'         => array(
 				'title'   => __( 'Tax status', 'woo-flexible-shipping' ),
 				'type'    => 'select',
 				'default' => 'taxable',
@@ -71,7 +79,7 @@ class TableRateMethod extends \WC_Shipping_Method {
 					'none'    => __( 'None', 'woo-flexible-shipping' ),
 				),
 			),
-			'cost'       => array(
+			'cost'               => array(
 				'title'       => __( 'Base Cost', 'woo-flexible-shipping' ),
 				'type'        => 'text',
 				'placeholder' => '0.00',
@@ -111,9 +119,10 @@ class TableRateMethod extends \WC_Shipping_Method {
 	 * @return void
 	 */
 	public function calculate_shipping( $package = array() ): void {
-		$base_cost = (float) wc_format_decimal( $this->get_option( 'cost', '0.00' ) );
-		$raw_rules = $this->get_option( 'wfs_method_rules', '[]' );
-		$rules     = is_array( $raw_rules ) ? $raw_rules : json_decode( $raw_rules, true );
+		$base_cost   = (float) wc_format_decimal( $this->get_option( 'cost', '0.00' ) );
+		$description = $this->get_option( 'method_description', '' );
+		$raw_rules   = $this->get_option( 'wfs_method_rules', '[]' );
+		$rules       = is_array( $raw_rules ) ? $raw_rules : json_decode( $raw_rules, true );
 
 		$engine = new CalculationEngine();
 		$result = $engine->calculate( $package, is_array( $rules ) ? $rules : array() );
@@ -136,15 +145,21 @@ class TableRateMethod extends \WC_Shipping_Method {
 			'applied_rules' => $result['applied_rules'],
 		);
 
+		$meta_data = array(
+			'fs_costs'          => json_encode( $breakdown, JSON_UNESCAPED_UNICODE ),
+			'_table_rate_costs' => json_encode( $breakdown, JSON_UNESCAPED_UNICODE ),
+		);
+
+		if ( ! empty( $description ) ) {
+			$meta_data['method_description'] = $description;
+		}
+
 		$rate = array(
 			'id'        => $this->get_option_key(),
 			'label'     => $this->title,
 			'cost'      => $total,
 			'package'   => $package,
-			'meta_data' => array(
-				'fs_costs'          => json_encode( $breakdown, JSON_UNESCAPED_UNICODE ),
-				'_table_rate_costs' => json_encode( $breakdown, JSON_UNESCAPED_UNICODE ),
-			),
+			'meta_data' => $meta_data,
 		);
 
 		$this->add_rate( $rate );
