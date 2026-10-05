@@ -1,0 +1,149 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Woo Flexible Shipping Table Rate 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/agency/woo-flexible-shipping\n"
+"POT-Creation-Date: 2026-10-01 12:00+0000\n"
+"PO-Revision-Date: 2026-10-01 12:00+0000\n"
+"Last-Translator: Agency Engineering\n"
+"Language-Team: French <fr@example.com>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Antigravity\n"
+"X-Domain: woo-flexible-shipping\n"
+
+#: src/Shipping/CalculationEngine.php:125
+msgid "Item Count"
+msgstr "Nombre d'articles"
+
+#: src/Shipping/CalculationEngine.php:126
+msgid "Weight"
+msgstr "Poids total"
+
+#: src/Shipping/CalculationEngine.php:127
+msgid "Price"
+msgstr "Sous-total panier"
+
+#: src/Shipping/FlatRateExtension.php:40
+msgid "Flexible Table Rate Surcharges"
+msgstr "Surcharges de livraison par palier"
+
+#: src/Shipping/FlatRateExtension.php:42
+msgid "Configure tiered rules based on item count, order weight, or subtotal."
+msgstr "Configurez des règles par palier basées sur le nombre d'articles, le poids ou le sous-total."
+
+#: src/Shipping/FlatRateExtension.php:46
+msgid "Enable Table Rate Rules"
+msgstr "Activer les règles de calcul par palier"
+
+#: src/Shipping/FlatRateExtension.php:48
+msgid "Enable tiered surcharge calculation table for this method"
+msgstr "Activer la grille de calcul des surcharges pour cette méthode"
+
+#: src/Shipping/FlatRateExtension.php:54
+#: src/Shipping/TableRateMethod.php:73
+#: src/Admin/TableRateField.php:41
+msgid "Table Rate Rules Matrix"
+msgstr "Matrice de règles de livraison par palier"
+
+#: src/Shipping/FlatRateExtension.php:56
+msgid "Set minimum, maximum thresholds and cost adjustments."
+msgstr "Définissez les seuils min, max et les ajustements de coût."
+
+#: src/Shipping/TableRateMethod.php:23
+#: src/Shipping/TableRateMethod.php:53
+msgid "Soyoo Table Rate"
+msgstr "Livraison par palier (Soyoo Table Rate)"
+
+#: src/Shipping/TableRateMethod.php:24
+msgid "Tiered table rate shipping based on item quantity, package weight, or cart subtotal."
+msgstr "Livraison par palier basée sur le nombre d'articles, le poids du colis ou le sous-total du panier."
+
+#: src/Shipping/TableRateMethod.php:50
+msgid "Method Title"
+msgstr "Titre de la méthode"
+
+#: src/Shipping/TableRateMethod.php:52
+msgid "Title shown to customers during checkout."
+msgstr "Titre affiché aux clients lors de la commande."
+
+#: src/Shipping/TableRateMethod.php:57
+msgid "Tax status"
+msgstr "État de la taxe"
+
+#: src/Shipping/TableRateMethod.php:60
+msgid "Taxable"
+msgstr "Taxable"
+
+#: src/Shipping/TableRateMethod.php:61
+msgid "None"
+msgstr "Aucun"
+
+#: src/Shipping/TableRateMethod.php:65
+msgid "Base Cost"
+msgstr "Coût de base"
+
+#: src/Shipping/TableRateMethod.php:68
+msgid "Base shipping cost before tiered rules apply."
+msgstr "Frais de port de base avant l'application des règles par palier."
+
+#: src/Shipping/OrderMetadata.php:65
+msgid "Table Rate Calculation Breakdown:"
+msgstr "Détail du calcul des frais de livraison :"
+
+#: src/Shipping/OrderMetadata.php:68
+msgid "Base Price:"
+msgstr "Prix de base :"
+
+#: src/Shipping/OrderMetadata.php:71
+msgid "Tier Surcharge:"
+msgstr "Surcharge par palier :"
+
+#: src/Shipping/OrderMetadata.php:74
+msgid "Rule Applied:"
+msgstr "Règle appliquée :"
+
+#: src/Migration/AdminMigrationPage.php:24
+msgid "Table Rate Migration"
+msgstr "Migration Flexible Shipping"
+
+#: src/Migration/AdminMigrationPage.php:48
+msgid "1-Click Flexible Shipping PRO Migration Assistant"
+msgstr "Assistant de migration 1-Clic Flexible Shipping PRO"
+
+#: src/Migration/AdminMigrationPage.php:50
+msgid "Easily convert all 28+ existing flat rate methods configured with Octolize Flexible Shipping PRO into high-performance Woo Flexible Shipping table rates."
+msgstr "Convertissez facilement toutes les méthodes configurées avec Flexible Shipping PRO en règles d'expédition Woo Flexible Shipping."
+
+#: src/Migration/AdminMigrationPage.php:55
+msgid "Migration Complete!"
+msgstr "Migration terminée !"
+
+#: src/Migration/AdminMigrationPage.php:71
+msgid "Shipping Zone"
+msgstr "Zone de livraison"
+
+#: src/Migration/AdminMigrationPage.php:72
+msgid "Instance ID"
+msgstr "ID d'instance"
+
+#: src/Migration/AdminMigrationPage.php:73
+msgid "Method Title"
+msgstr "Titre de la méthode"
+
+#: src/Migration/AdminMigrationPage.php:74
+msgid "Rules Imported"
+msgstr "Règles importées"
+
+#: src/Migration/AdminMigrationPage.php:91
+msgid "Ready to Import Shipping Rules?"
+msgstr "Prêt à importer les règles d'expédition ?"
+
+#: src/Migration/AdminMigrationPage.php:93
+msgid "Clicking the button below will scan all shipping zones in WooCommerce, locate any active Flexible Shipping PRO rules (fs_method_rules), and convert them into Woo Flexible Shipping matrix format."
+msgstr "En cliquant sur le bouton ci-dessous, le système analysera toutes les zones de livraison et convertira les règles Octolize au nouveau format."
+
+#: src/Migration/AdminMigrationPage.php:97
+msgid "Import from Flexible Shipping PRO"
+msgstr "Importer depuis Flexible Shipping PRO"

@@ -1,0 +1,217 @@
+/**
+ * Styling for Woo Flexible Shipping Table Rate admin editor & migration page.
+ */
+
+/* Prevent left label cell from shrinking/stretching when table rows exist */
+.form-table tr.wfs-table-rate-matrix-row > th.titledesc,
+.form-table tr.wfs-table-rate-matrix-row > th {
+	width: 220px !important;
+	min-width: 220px !important;
+	max-width: 220px !important;
+	vertical-align: top !important;
+	padding-top: 15px !important;
+}
+
+.wfs-table-editor-container {
+	margin-top: 5px;
+	width: 100%;
+	max-width: 100%;
+}
+
+.wfs-table-scroll-wrapper {
+	width: 100%;
+	overflow-x: auto;
+	border: 1px solid #c3c4c7;
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.wfs-rules-table {
+	width: 100%;
+	min-width: 750px;
+	table-layout: fixed;
+	border: none !important;
+	margin-bottom: 0 !important;
+	border-collapse: collapse;
+}
+
+.wfs-rules-table th {
+	font-weight: 600;
+	padding: 12px 10px;
+	background: #f6f7f7;
+	border-bottom: 1px solid #c3c4c7;
+	font-size: 13px;
+	white-space: nowrap !important;
+	color: #1d2327;
+}
+
+.wfs-rules-table th.th-align-center {
+	text-align: center !important;
+}
+
+.wfs-rules-table td {
+	padding: 8px 10px;
+	vertical-align: middle;
+}
+
+.wfs-rules-table tbody tr {
+	transition: background-color 0.15s ease;
+}
+
+.wfs-rules-table tbody tr:hover {
+	background-color: #f8fafc;
+}
+
+.wfs-rules-table select.wfs-input-condition {
+	box-sizing: border-box !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	margin: 0 !important;
+	height: 36px;
+	font-size: 13px;
+	border-radius: 6px;
+	border: 1px solid #8c8f94;
+	padding: 0 10px;
+	text-align: left;
+	text-overflow: ellipsis;
+	background-color: #fff;
+}
+
+.wfs-rules-table input[type="number"] {
+	box-sizing: border-box !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	margin: 0 !important;
+	height: 36px;
+	font-size: 13px;
+	font-weight: 500;
+	border-radius: 6px;
+	border: 1px solid #8c8f94;
+	padding: 0 8px;
+	text-align: center;
+	background-color: #fff;
+}
+
+.wfs-rules-table input[type="number"]:focus,
+.wfs-rules-table select:focus {
+	border-color: #2271b1 !important;
+	box-shadow: 0 0 0 1px #2271b1 !important;
+	outline: none;
+}
+
+/* Perfect Circular Delete Action Button (min-height unset to prevent oval distortion) */
+.wfs-delete-rule-btn {
+	box-sizing: border-box !important;
+	width: 28px !important;
+	height: 28px !important;
+	min-width: 28px !important;
+	max-width: 28px !important;
+	min-height: 28px !important;
+	max-height: 28px !important;
+	line-height: 26px !important;
+	aspect-ratio: 1 / 1 !important;
+	border-radius: 50% !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	border: 1px solid #d63638 !important;
+	color: #d63638 !important;
+	background: #fff !important;
+	font-size: 16px !important;
+	padding: 0 !important;
+	cursor: pointer;
+	flex-shrink: 0 !important;
+	transition: all 0.2s ease-in-out !important;
+	margin: 0 auto !important;
+}
+
+.wfs-delete-rule-btn:hover {
+	background: #d63638 !important;
+	color: #fff !important;
+	box-shadow: 0 2px 6px rgba(214, 54, 56, 0.25) !important;
+	transform: scale(1.08);
+}
+
+.wfs-add-rule-btn {
+	margin-top: 10px !important;
+	font-weight: 600 !important;
+	border-radius: 6px !important;
+	padding: 4px 14px !important;
+	height: 36px !important;
+	line-height: 26px !important;
+}
+
+/* Static Active Rules Badge - Zero Hover Effect */
+.wfs-rules-badge,
+.wfs-rules-badge:hover,
+.wfs-rules-badge:focus,
+.wfs-rules-badge:active {
+	background: #f0f6fc !important;
+	color: #1a73e8 !important;
+	border: 1px solid #c2d7f5 !important;
+	box-shadow: none !important;
+	cursor: default !important;
+	outline: none !important;
+	transform: none !important;
+	pointer-events: none !important;
+	display: inline-block !important;
+	font-weight: 600 !important;
+	border-radius: 12px !important;
+	padding: 4px 14px !important;
+	font-size: 13px !important;
+	line-height: 1.4 !important;
+}
+
+.wfs-order-shipping-breakdown {
+	border-radius: 4px;
+	margin-top: 6px;
+}
+
+/* Hide unneeded floating bottom submit button on Migration Tab */
+.woocommerce_page_wc-settings.wfs-migration-tab-active p.submit,
+body.woocommerce_page_wc-settings #mainform p.submit.wfs-hide-submit {
+	display: none !important;
+}
+
+/* Migration Page Full-Width Card Styling */
+.wfs-migration-wrapper {
+	max-width: 1000px !important;
+	width: 100% !important;
+}
+
+.wfs-migration-wrapper .card {
+	max-width: 100% !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+	border: 1px solid #c3c4c7;
+	border-radius: 8px;
+	background: #fff;
+	transition: box-shadow 0.2s ease;
+}
+
+.wfs-migration-hero {
+	background: linear-gradient(135deg, #f0f6fc 0%, #e6f0fa 100%);
+	border: 1px solid #c8d7e1 !important;
+	border-radius: 8px;
+	padding: 24px;
+	margin-bottom: 20px;
+}
+
+.wfs-pill-badge {
+	display: inline-block;
+	padding: 3px 10px;
+	font-size: 12px;
+	font-weight: 600;
+	border-radius: 12px;
+	background: #e5f5ea;
+	color: #137333;
+	border: 1px solid #ceead6;
+}
+
+.wfs-pill-badge-blue {
+	background: #e8f0fe;
+	color: #1a73e8;
+	border-color: #d2e3fc;
+}
