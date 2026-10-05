@@ -49,37 +49,67 @@ class Migrator {
 
 			foreach ( $methods as $method ) {
 				$instance_id = $method->instance_id ?? 0;
+				$method_id   = $method->id ?? ( $method->method_id ?? '' );
 				if ( ! $instance_id ) {
 					continue;
 				}
 
-				$option_key = 'woocommerce_flat_rate_' . $instance_id . '_settings';
-				$settings   = get_option( $option_key, array() );
+				$possible_keys = array(
+					'woocommerce_' . $method_id . '_' . $instance_id . '_settings',
+					'woocommerce_flat_rate_' . $instance_id . '_settings',
+					'woocommerce_flexible_shipping_single_' . $instance_id . '_settings',
+					'woocommerce_flexible_shipping_' . $instance_id . '_settings',
+				);
 
-				if ( empty( $settings ) || ! is_array( $settings ) ) {
+				$settings  = array();
+				$found_key = '';
+
+				foreach ( $possible_keys as $key ) {
+					$opt = get_option( $key, array() );
+					if ( ! empty( $opt ) && is_array( $opt ) ) {
+						$settings  = $opt;
+						$found_key = $key;
+						break;
+					}
+				}
+
+				if ( empty( $settings ) && isset( $method->instance_settings ) && is_array( $method->instance_settings ) ) {
+					$settings  = $method->instance_settings;
+					$found_key = 'woocommerce_' . ( $method_id ? $method_id : 'flat_rate' ) . '_' . $instance_id . '_settings';
+				}
+
+				if ( empty( $settings ) ) {
 					continue;
 				}
 
-				$fs_enabled = $settings['fs_calculation_enabled'] ?? 'no';
-				$fs_rules   = $settings['fs_method_rules'] ?? '[]';
+				$fs_enabled = $settings['wfs_calculation_enabled'] ?? ( $settings['fs_calculation_enabled'] ?? 'no' );
+				$raw_rules  = $settings['wfs_method_rules'] ?? ( $settings['fs_method_rules'] ?? ( $settings['method_rules'] ?? ( $settings['rules'] ?? '' ) ) );
 
-				if ( 'yes' !== $fs_enabled && ( empty( $fs_rules ) || '[]' === $fs_rules ) ) {
+				if ( empty( $raw_rules ) || '[]' === $raw_rules ) {
 					continue;
 				}
 
-				$normalized_rules = $this->convert_rules( $fs_rules );
+				$normalized_rules = $this->convert_rules( $raw_rules );
+				if ( empty( $normalized_rules ) ) {
+					continue;
+				}
 
 				$settings['wfs_calculation_enabled'] = 'yes';
 				$settings['wfs_method_rules']        = json_encode( $normalized_rules, JSON_UNESCAPED_UNICODE );
 
-				update_option( $option_key, $settings );
+				if ( $found_key ) {
+					update_option( $found_key, $settings );
+				}
+
+				$method_title = $method->title ?? ( $settings['title'] ?? ( $settings['method_title'] ?? 'Flat Rate' ) );
 
 				$report['methods_migrated']++;
 				$report['details'][] = array(
 					'zone_id'     => $zone_id,
 					'zone_name'   => $zone_name,
 					'instance_id' => $instance_id,
-					'title'       => $method->title ?? ( $settings['title'] ?? 'Flat Rate' ),
+					'method_id'   => $method_id,
+					'title'       => $method_title,
 					'rules_count' => count( $normalized_rules ),
 				);
 			}

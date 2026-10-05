@@ -4,7 +4,7 @@ Tags: woocommerce, shipping, table rate, flexible shipping, rate calculation
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,9 @@ Features:
 3. Go to WooCommerce > Settings > Shipping > Table Rate Migration to run 1-Click Import.
 
 == Changelog ==
+
+= 1.0.2 =
+* Expanded 1-click migration engine to convert standalone flexible_shipping_single methods (e.g. baches-mfm.com).
 
 = 1.0.1 =
 * Version bump and GitHub update checker verification.

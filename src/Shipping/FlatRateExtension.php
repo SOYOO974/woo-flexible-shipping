@@ -117,24 +117,37 @@ class FlatRateExtension {
 				continue;
 			}
 
-			if ( 'flat_rate' !== $rate->method_id ) {
-				continue;
-			}
-
 			$instance_id = $rate->instance_id ?? 0;
 			if ( ! $instance_id ) {
 				continue;
 			}
 
-			$option_key = 'woocommerce_flat_rate_' . $instance_id . '_settings';
-			$settings   = get_option( $option_key, array() );
+			$method_id = $rate->method_id;
 
-			if ( empty( $settings ) || ! is_array( $settings ) ) {
+			$possible_keys = array(
+				'woocommerce_' . $method_id . '_' . $instance_id . '_settings',
+				'woocommerce_flat_rate_' . $instance_id . '_settings',
+				'woocommerce_flexible_shipping_single_' . $instance_id . '_settings',
+				'woocommerce_flexible_shipping_' . $instance_id . '_settings',
+			);
+
+			$settings = array();
+			foreach ( $possible_keys as $key ) {
+				$opt = get_option( $key, array() );
+				if ( ! empty( $opt ) && is_array( $opt ) ) {
+					$settings = $opt;
+					break;
+				}
+			}
+
+			if ( empty( $settings ) ) {
 				continue;
 			}
 
 			$is_enabled = ( $settings[ self::SETTING_ENABLED ] ?? 'no' ) === 'yes'
-				|| ( $settings[ self::LEGACY_SETTING_ENABLED ] ?? 'no' ) === 'yes';
+				|| ( $settings[ self::LEGACY_SETTING_ENABLED ] ?? 'no' ) === 'yes'
+				|| 'flexible_shipping_single' === $method_id
+				|| 'flexible_shipping' === $method_id;
 
 			if ( ! $is_enabled ) {
 				continue;
@@ -142,10 +155,10 @@ class FlatRateExtension {
 
 			$raw_rules = $settings[ self::SETTING_RULES ] ?? '';
 			if ( empty( $raw_rules ) || '[]' === $raw_rules ) {
-				$raw_rules = $settings[ self::LEGACY_SETTING_RULES ] ?? '[]';
+				$raw_rules = $settings[ self::LEGACY_SETTING_RULES ] ?? ( $settings['method_rules'] ?? ( $settings['rules'] ?? '[]' ) );
 			}
 
-			$rules = is_array( $raw_rules ) ? $raw_rules : json_decode( $raw_rules, true );
+			$rules = is_array( $raw_rules ) ? $raw_rules : json_decode( (string) $raw_rules, true );
 
 			$result = $this->engine->calculate( $package, is_array( $rules ) ? $rules : array() );
 
