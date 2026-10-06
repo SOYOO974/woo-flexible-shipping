@@ -121,6 +121,7 @@ class Migrator {
 							'title'              => $method_title,
 							'method_description' => $method_description,
 							'tax_status'         => $settings['tax_status'] ?? ( $settings['tax_heading'] ?? 'taxable' ),
+							'prices_include_tax' => $settings['prices_include_tax'] ?? 'no',
 							'cost'               => '0.00',
 							'wfs_method_rules'   => json_encode( $normalized_rules, JSON_UNESCAPED_UNICODE ),
 						);

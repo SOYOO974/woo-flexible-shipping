@@ -3,7 +3,7 @@
  * Plugin Name: Woo Flexible Shipping Table Rate
  * Plugin URI: https://soyoo.re
  * Description: Ultra-lightweight, high-performance WooCommerce table rate shipping engine with order traceability, HPOS compatibility, and 1-click migration from Flexible Shipping PRO.
- * Version: 1.0.7
+ * Version: 1.0.9
  * Author: Soyoo.re
  * Text Domain: woo-flexible-shipping
  * Domain Path: /languages
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WFS_VERSION', '1.0.7' );
+define( 'WFS_VERSION', '1.0.9' );
 define( 'WFS_PLUGIN_FILE', __FILE__ );
 define( 'WFS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WFS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

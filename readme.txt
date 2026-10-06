@@ -4,7 +4,7 @@ Tags: woocommerce, shipping, table rate, flexible shipping, rate calculation
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.7
+Stable tag: 1.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,12 @@ Features:
 3. Go to WooCommerce > Settings > Shipping > Table Rate Migration to run 1-Click Import.
 
 == Changelog ==
+
+= 1.0.9 =
+* Add base tax rate fallback when location shipping tax rates return empty to guarantee tax extraction when prices_include_tax is enabled.
+
+= 1.0.8 =
+* Add Tax Included in Shipping Cost setting with dynamic tax_status toggle and tax-inclusive rate calculation.
 
 = 1.0.7 =
 * Preserve exact shipping zone method ordering by positioning new Soyoo Table Rate method directly below the migrated legacy method.

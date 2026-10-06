@@ -150,10 +150,30 @@ jQuery( document ).ready( function( $ ) {
 		return String( str ).replace( /"/g, '&quot;' );
 	}
 
+	function initTaxStatusToggle() {
+		var $taxSelect = $( 'select[name*="tax_status"]' );
+		if ( ! $taxSelect.length ) return;
+
+		function updateToggle() {
+			var val = $taxSelect.val();
+			var $includeTaxRow = $( 'select[name*="prices_include_tax"]' ).closest( 'tr' );
+			if ( 'taxable' === val ) {
+				$includeTaxRow.show();
+			} else {
+				$includeTaxRow.hide();
+			}
+		}
+
+		$taxSelect.off( 'change.wfsTax' ).on( 'change.wfsTax', updateToggle );
+		updateToggle();
+	}
+
 	// Initialize on page load.
 	initTableEditors();
+	initTaxStatusToggle();
 
 	$( document ).ajaxComplete( function() {
 		initTableEditors();
+		initTaxStatusToggle();
 	} );
 } );

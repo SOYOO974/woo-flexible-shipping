@@ -79,6 +79,17 @@ class TableRateMethod extends \WC_Shipping_Method {
 					'none'    => __( 'None', 'woo-flexible-shipping' ),
 				),
 			),
+			'prices_include_tax' => array(
+				'title'       => __( 'Tax included in shipping cost', 'woo-flexible-shipping' ),
+				'type'        => 'select',
+				'default'     => 'no',
+				'options'     => array(
+					'yes' => __( 'Yes, I will enter the shipping cost inclusive of tax', 'woo-flexible-shipping' ),
+					'no'  => __( 'No, I will enter the shipping cost exclusive of tax', 'woo-flexible-shipping' ),
+				),
+				'description' => __( 'Choose whether shipping rates entered in the table rate matrix include taxes.', 'woo-flexible-shipping' ),
+				'desc_tip'    => true,
+			),
 			'cost'               => array(
 				'title'       => __( 'Base Cost', 'woo-flexible-shipping' ),
 				'type'        => 'text',
@@ -119,10 +130,11 @@ class TableRateMethod extends \WC_Shipping_Method {
 	 * @return void
 	 */
 	public function calculate_shipping( $package = array() ): void {
-		$base_cost   = (float) wc_format_decimal( $this->get_option( 'cost', '0.00' ) );
-		$description = $this->get_option( 'method_description', '' );
-		$raw_rules   = $this->get_option( 'wfs_method_rules', '[]' );
-		$rules       = is_array( $raw_rules ) ? $raw_rules : json_decode( $raw_rules, true );
+		$base_cost          = (float) wc_format_decimal( $this->get_option( 'cost', '0.00' ) );
+		$description        = $this->get_option( 'method_description', '' );
+		$prices_include_tax = $this->get_option( 'prices_include_tax', 'no' );
+		$raw_rules          = $this->get_option( 'wfs_method_rules', '[]' );
+		$rules              = is_array( $raw_rules ) ? $raw_rules : json_decode( $raw_rules, true );
 
 		$engine = new CalculationEngine();
 		$result = $engine->calculate( $package, is_array( $rules ) ? $rules : array() );
@@ -154,13 +166,44 @@ class TableRateMethod extends \WC_Shipping_Method {
 			$meta_data['method_description'] = $description;
 		}
 
+		$rate_cost  = $total;
+		$rate_taxes = array();
+
+		if ( 'taxable' === $this->tax_status && class_exists( '\WC_Tax' ) && function_exists( 'wc_tax_enabled' ) && wc_tax_enabled() ) {
+			$dest      = $package['destination'] ?? array();
+			$tax_rates = \WC_Tax::get_shipping_tax_rates( $dest['country'] ?? '', $dest['state'] ?? '', $dest['postcode'] ?? '', $dest['city'] ?? '' );
+
+			// Fallback to shop base tax rates if location-specific shipping tax rates returned empty
+			if ( empty( $tax_rates ) ) {
+				$tax_rates = \WC_Tax::get_base_tax_rates();
+			}
+
+			if ( ! empty( $tax_rates ) ) {
+				if ( 'yes' === $prices_include_tax ) {
+					// Extract tax from gross total (passing price_includes_tax = true)
+					$taxes      = \WC_Tax::calc_tax( $total, $tax_rates, true );
+					$rate_cost  = max( 0.0, $total - array_sum( $taxes ) );
+					$rate_taxes = $taxes;
+				} else {
+					// Calculate tax on top of net total (passing price_includes_tax = false)
+					$rate_taxes = \WC_Tax::calc_shipping_tax( $total, $tax_rates );
+				}
+			}
+		}
+
 		$rate = array(
 			'id'        => $this->get_option_key(),
 			'label'     => $this->title,
-			'cost'      => $total,
+			'cost'      => $rate_cost,
 			'package'   => $package,
 			'meta_data' => $meta_data,
 		);
+
+		if ( ! empty( $rate_taxes ) ) {
+			$rate['taxes'] = $rate_taxes;
+		} elseif ( 'none' === $this->tax_status ) {
+			$rate['taxes'] = false;
+		}
 
 		$this->add_rate( $rate );
 	}
