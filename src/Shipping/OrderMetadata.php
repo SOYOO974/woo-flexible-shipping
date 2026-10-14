@@ -17,7 +17,6 @@ class OrderMetadata {
 	 */
 	public function init(): void {
 		add_action( 'woocommerce_checkout_create_order_shipping_item', array( $this, 'attach_shipping_meta' ), 10, 3 );
-		add_action( 'woocommerce_before_shipping_zone_object_save', array( $this, 'attach_shipping_meta' ), 10, 3 );
 		add_action( 'woocommerce_after_shipping_rate', array( $this, 'render_cart_rate_breakdown' ), 10, 1 );
 		add_action( 'woocommerce_after_order_itemmeta', array( $this, 'render_admin_order_item_meta' ), 10, 3 );
 		add_filter( 'woocommerce_hidden_order_itemmeta', array( $this, 'hide_raw_meta_keys' ) );
@@ -38,27 +37,58 @@ class OrderMetadata {
 	/**
 	 * Transfer fs_costs metadata from shipping rate to order shipping line item.
 	 *
-	 * @param \WC_Order_Item_Shipping $item Order shipping line item.
+	 * @param \WC_Order_Item_Shipping|mixed $item Order shipping line item.
 	 * @param string $package_key Package key.
 	 * @param array $package Shipping rate package.
 	 * @return void
 	 */
-	public function attach_shipping_meta( $item, $package_key, $package ): void {
+	public function attach_shipping_meta( $item = null, $package_key = '', $package = array() ): void {
 		if ( ! is_object( $item ) || ! method_exists( $item, 'add_meta_data' ) ) {
 			return;
 		}
 
-		// Try finding rate from package.
-		if ( isset( $package['rates'] ) && is_array( $package['rates'] ) ) {
+		if ( ! isset( $package['rates'] ) || ! is_array( $package['rates'] ) || empty( $package['rates'] ) ) {
+			return;
+		}
+
+		$item_method_id   = method_exists( $item, 'get_method_id' ) ? (string) $item->get_method_id() : '';
+		$item_instance_id = method_exists( $item, 'get_instance_id' ) ? absint( $item->get_instance_id() ) : 0;
+		$chosen_rate_id   = $item_instance_id > 0 ? $item_method_id . ':' . $item_instance_id : $item_method_id;
+
+		$matched_rate = null;
+
+		// 1. Try finding rate by exact rate ID matching the order shipping item.
+		if ( ! empty( $chosen_rate_id ) && isset( $package['rates'][ $chosen_rate_id ] ) ) {
+			$matched_rate = $package['rates'][ $chosen_rate_id ];
+		} else {
+			foreach ( $package['rates'] as $rate_id => $rate ) {
+				if ( is_object( $rate ) ) {
+					if ( (string) $rate_id === $chosen_rate_id || ( method_exists( $rate, 'get_instance_id' ) && $item_instance_id > 0 && $rate->get_instance_id() === $item_instance_id ) ) {
+						$matched_rate = $rate;
+						break;
+					}
+				}
+			}
+		}
+
+		// 2. Fallback: match first available rate with fs_costs.
+		if ( ! $matched_rate ) {
 			foreach ( $package['rates'] as $rate ) {
 				if ( is_object( $rate ) && method_exists( $rate, 'get_meta_data' ) ) {
 					$meta = $rate->get_meta_data();
 					if ( ! empty( $meta['fs_costs'] ) ) {
-						$item->add_meta_data( 'fs_costs', $meta['fs_costs'], true );
-						$item->add_meta_data( '_table_rate_costs', $meta['fs_costs'], true );
+						$matched_rate = $rate;
 						break;
 					}
 				}
+			}
+		}
+
+		if ( is_object( $matched_rate ) && method_exists( $matched_rate, 'get_meta_data' ) ) {
+			$meta = $matched_rate->get_meta_data();
+			if ( ! empty( $meta['fs_costs'] ) ) {
+				$item->add_meta_data( 'fs_costs', $meta['fs_costs'], true );
+				$item->add_meta_data( '_table_rate_costs', $meta['fs_costs'], true );
 			}
 		}
 	}

@@ -36,7 +36,10 @@ class CalculationEngine {
 				continue;
 			}
 
-			$condition = strtolower( trim( $rule['condition'] ?? $rule['condition_id'] ?? 'item' ) );
+			$condition = strtolower( trim( (string) ( $rule['condition'] ?? $rule['condition_id'] ?? 'item' ) ) );
+			if ( 'value' === $condition || 'subtotal' === $condition ) {
+				$condition = 'price';
+			}
 			$val       = $metrics[ $condition ] ?? 0.0;
 
 			$has_min = isset( $rule['min'] ) && $rule['min'] !== '' && $rule['min'] !== null;
@@ -131,9 +134,11 @@ class CalculationEngine {
 		}
 
 		return array(
-			'item'   => $item_count,
-			'weight' => $weight,
-			'price'  => $price,
+			'item'     => $item_count,
+			'weight'   => $weight,
+			'price'    => $price,
+			'value'    => $price,
+			'subtotal' => $price,
 		);
 	}
 

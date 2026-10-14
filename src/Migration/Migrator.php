@@ -118,12 +118,15 @@ class Migrator {
 					if ( $new_instance_id ) {
 						$new_option_key = 'woocommerce_soyoo_table_rate_' . $new_instance_id . '_settings';
 						$new_settings   = array(
-							'title'              => $method_title,
-							'method_description' => $method_description,
-							'tax_status'         => $settings['tax_status'] ?? ( $settings['tax_heading'] ?? 'taxable' ),
-							'prices_include_tax' => $settings['prices_include_tax'] ?? 'no',
-							'cost'               => '0.00',
-							'wfs_method_rules'   => json_encode( $normalized_rules, JSON_UNESCAPED_UNICODE ),
+							'title'                      => $method_title,
+							'method_description'         => $method_description,
+							'method_logo_id'             => absint( $settings['method_logo_id'] ?? ( $settings['method_logo'] ?? 0 ) ),
+							'method_free_shipping'       => isset( $settings['method_free_shipping'] ) ? (string) $settings['method_free_shipping'] : ( (string) ( $settings['free_shipping'] ?? '' ) ),
+							'method_free_shipping_label' => (string) ( $settings['method_free_shipping_label'] ?? ( $settings['free_shipping_label'] ?? '' ) ),
+							'tax_status'                 => $settings['tax_status'] ?? ( $settings['tax_heading'] ?? 'taxable' ),
+							'prices_include_tax'         => $settings['prices_include_tax'] ?? 'no',
+							'cost'                       => '0.00',
+							'wfs_method_rules'           => json_encode( $normalized_rules, JSON_UNESCAPED_UNICODE ),
 						);
 						update_option( $new_option_key, $new_settings );
 
@@ -225,6 +228,11 @@ class Migrator {
 				$condition = $rule['condition'];
 				$min       = ( isset( $rule['min'] ) && '' !== $rule['min'] ) ? (float) $rule['min'] : '';
 				$max       = ( isset( $rule['max'] ) && '' !== $rule['max'] ) ? (float) $rule['max'] : '';
+			}
+
+			$cond_lower = strtolower( (string) $condition );
+			if ( 'value' === $cond_lower || 'subtotal' === $cond_lower || 'price' === $cond_lower ) {
+				$condition = 'price';
 			}
 
 			$cost_per_order  = (float) ( $rule['cost_per_order'] ?? 0.0 );

@@ -4,7 +4,7 @@ Tags: woocommerce, shipping, table rate, flexible shipping, rate calculation
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.9
+Stable tag: 1.0.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,19 @@ Features:
 3. Go to WooCommerce > Settings > Shipping > Table Rate Migration to run 1-Click Import.
 
 == Changelog ==
+
+= 1.0.12 =
+* Fix: Remove incompatible zone save hook in OrderMetadata to resolve PHP 8 ArgumentCountError when saving shipping zone methods.
+* Fix: Use standard WooCommerce rate ID (get_rate_id()) instead of option key in TableRateMethod to ensure proper multi-method recognition and filtering.
+* Fix: Enhance multi-method metadata attribution during checkout order shipping item creation.
+
+= 1.0.11 =
+* Map Flexible Shipping 'value' condition to 'price' (Cart Subtotal) across migration, calculation engine, and admin matrix editor.
+* Add Free Shipping threshold and Free Shipping label support to Soyoo Table Rate shipping methods and 1-Click migration.
+
+= 1.0.10 =
+* Add Method Logo setting to Soyoo Table Rate shipping methods with WordPress Media Library picker and front-end logo display on Cart and Checkout.
+* Support method_logo_id migration during 1-Click Flexible Shipping PRO migration.
 
 = 1.0.9 =
 * Add base tax rate fallback when location shipping tax rates return empty to guarantee tax extraction when prices_include_tax is enabled.

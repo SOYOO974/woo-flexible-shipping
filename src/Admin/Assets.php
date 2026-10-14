@@ -33,6 +33,10 @@ class Assets {
 			return;
 		}
 
+		if ( function_exists( 'wp_enqueue_media' ) ) {
+			wp_enqueue_media();
+		}
+
 		wp_enqueue_style(
 			'wfs-admin-editor-css',
 			WFS_PLUGIN_URL . 'assets/css/admin-table-editor.css',
@@ -57,6 +61,8 @@ class Assets {
 				'item_label'     => __( 'Item Count (Quantity)', 'woo-flexible-shipping' ),
 				'weight_label'   => __( 'Total Weight (kg/lbs)', 'woo-flexible-shipping' ),
 				'price_label'    => __( 'Cart Subtotal (€)', 'woo-flexible-shipping' ),
+				'choose_logo'    => __( 'Choose logo', 'woo-flexible-shipping' ),
+				'change_logo'    => __( 'Change logo', 'woo-flexible-shipping' ),
 			)
 		);
 	}

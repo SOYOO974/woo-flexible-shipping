@@ -92,7 +92,7 @@ jQuery( document ).ready( function( $ ) {
 				'<select class="wfs-input-condition widefat">' +
 					'<option value="item"' + ( cond === 'item' ? ' selected' : '' ) + '>' + ( wfs_i18n.item_label || 'Item Count' ) + '</option>' +
 					'<option value="weight"' + ( cond === 'weight' ? ' selected' : '' ) + '>' + ( wfs_i18n.weight_label || 'Weight' ) + '</option>' +
-					'<option value="price"' + ( cond === 'price' ? ' selected' : '' ) + '>' + ( wfs_i18n.price_label || 'Subtotal Price' ) + '</option>' +
+					'<option value="price"' + ( ( cond === 'price' || cond === 'value' || cond === 'subtotal' ) ? ' selected' : '' ) + '>' + ( wfs_i18n.price_label || 'Subtotal Price' ) + '</option>' +
 				'</select>' +
 			'</td>' +
 			'<td><input type="number" step="any" class="wfs-input-min widefat" placeholder="0" value="' + escAttr( min ) + '" /></td>' +
@@ -168,12 +168,71 @@ jQuery( document ).ready( function( $ ) {
 		updateToggle();
 	}
 
+	function initMethodLogoField() {
+		$( document ).off( 'click.wfsLogoSelect', '.wfs-method-logo-field__select' ).on( 'click.wfsLogoSelect', '.wfs-method-logo-field__select', function( e ) {
+			e.preventDefault();
+			var $btn   = $( this );
+			var $field = $btn.closest( '.wfs-method-logo-field' );
+			var $input = $field.find( 'input[type="hidden"]' );
+			var $prev  = $field.find( '.wfs-method-logo-field__preview' );
+			var $img   = $field.find( '.wfs-method-logo-field__image' );
+			var $rem   = $field.find( '.wfs-method-logo-field__remove' );
+
+			var chooseTitle = ( typeof wfs_i18n !== 'undefined' && wfs_i18n.choose_logo ) ? wfs_i18n.choose_logo : ( $btn.data( 'choose' ) || 'Choose logo' );
+			var changeTitle = ( typeof wfs_i18n !== 'undefined' && wfs_i18n.change_logo ) ? wfs_i18n.change_logo : ( $btn.data( 'change' ) || 'Change logo' );
+
+			if ( typeof wp === 'undefined' || ! wp.media ) {
+				return;
+			}
+
+			var frame = wp.media( {
+				title: changeTitle,
+				library: { type: 'image' },
+				button: { text: changeTitle },
+				multiple: false
+			} );
+
+			frame.on( 'select', function() {
+				var attachment = frame.state().get( 'selection' ).first().toJSON();
+				var imageUrl   = ( attachment.sizes && attachment.sizes.thumbnail ) ? attachment.sizes.thumbnail.url : attachment.url;
+
+				if ( ! imageUrl ) {
+					return;
+				}
+
+				$input.val( attachment.id || '' );
+				$img.attr( 'src', imageUrl ).attr( 'alt', attachment.alt || attachment.title || '' );
+				$prev.show();
+				$rem.show();
+				$btn.text( changeTitle );
+			} );
+
+			frame.open();
+		} );
+
+		$( document ).off( 'click.wfsLogoRemove', '.wfs-method-logo-field__remove' ).on( 'click.wfsLogoRemove', '.wfs-method-logo-field__remove', function( e ) {
+			e.preventDefault();
+			var $rem   = $( this );
+			var $field = $rem.closest( '.wfs-method-logo-field' );
+			var $btn   = $field.find( '.wfs-method-logo-field__select' );
+			var chooseTitle = ( typeof wfs_i18n !== 'undefined' && wfs_i18n.choose_logo ) ? wfs_i18n.choose_logo : ( $btn.data( 'choose' ) || 'Choose logo' );
+
+			$field.find( 'input[type="hidden"]' ).val( '' );
+			$field.find( '.wfs-method-logo-field__image' ).attr( 'src', '' ).attr( 'alt', '' );
+			$field.find( '.wfs-method-logo-field__preview' ).hide();
+			$btn.text( chooseTitle );
+			$rem.hide();
+		} );
+	}
+
 	// Initialize on page load.
 	initTableEditors();
 	initTaxStatusToggle();
+	initMethodLogoField();
 
 	$( document ).ajaxComplete( function() {
 		initTableEditors();
 		initTaxStatusToggle();
+		initMethodLogoField();
 	} );
 } );

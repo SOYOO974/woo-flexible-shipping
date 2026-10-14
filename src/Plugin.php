@@ -91,7 +91,7 @@ class Plugin {
 	}
 
 	/**
-	 * Render shipping method description under shipping rate option on checkout/cart.
+	 * Render shipping method description and logo under shipping rate option on checkout/cart.
 	 *
 	 * @param \WC_Shipping_Rate $method Shipping rate object.
 	 * @param int|string $index Rate index.
@@ -104,11 +104,24 @@ class Plugin {
 
 		$meta_data   = $method->get_meta_data();
 		$description = $meta_data['method_description'] ?? '';
+		$logo_url    = $meta_data['method_logo_url'] ?? '';
+		$logo_alt    = $meta_data['method_logo_alt'] ?? '';
+
+		if ( empty( $description ) && empty( $logo_url ) ) {
+			return;
+		}
 
 		if ( ! empty( $description ) ) {
-			echo '<div class="wfs-shipping-method-description" style="font-size: 0.88em; color: #666; margin-top: 4px; line-height: 1.35;">'
+			$desc_margin = ! empty( $logo_url ) ? 'margin-bottom: 0;' : '';
+			echo '<div class="wfs-shipping-method-description shipping-method-description" style="font-size: 0.88em; color: #666; margin-top: 4px; line-height: 1.35;' . esc_attr( $desc_margin ) . '">'
 				. wp_kses_post( function_exists( 'wpautop' ) ? wpautop( trim( $description ) ) : esc_html( $description ) )
 				. '</div>';
+		}
+
+		if ( ! empty( $logo_url ) ) {
+			echo '<p class="wfs-shipping-method-logo shipping-method-logo" style="margin: 4px 0 0 0;">'
+				. '<img src="' . esc_url( $logo_url ) . '" alt="' . esc_attr( $logo_alt ) . '" style="max-width:96px;max-height:48px;width:auto;height:auto;" />'
+				. '</p>';
 		}
 	}
 }

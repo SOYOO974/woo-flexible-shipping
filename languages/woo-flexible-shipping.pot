@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Woo Flexible Shipping Table Rate 1.0.9\n"
+"Project-Id-Version: Woo Flexible Shipping Table Rate 1.0.12\n"
 "Report-Msgid-Bugs-To: https://github.com/agency/woo-flexible-shipping\n"
 "POT-Creation-Date: 2026-10-01 12:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -148,3 +148,46 @@ msgstr ""
 #: src/Migration/AdminMigrationPage.php:97
 msgid "Import from Flexible Shipping PRO"
 msgstr ""
+
+#: src/Shipping/TableRateMethod.php:74
+msgid "Method Logo"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:76
+msgid "Choose an image from the media library to display after the shipping method description in checkout."
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:164
+#: src/Admin/Assets.php:64
+msgid "Choose logo"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:164
+#: src/Admin/Assets.php:65
+msgid "Change logo"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:165
+msgid "Remove logo"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:82
+msgid "Free shipping threshold"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:84
+msgid "Enter a minimum cart subtotal value which once reached will result in granting customers free shipping."
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:89
+msgid "Free Shipping Label"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:91
+msgid "Enter the text for the additional shipping method label which will be displayed once free shipping is granted or calculated cost is 0.00."
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:260
+msgid "Free Shipping threshold reached"
+msgstr ""
+

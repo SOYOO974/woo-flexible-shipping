@@ -70,7 +70,31 @@ class TableRateMethod extends \WC_Shipping_Method {
 				'desc_tip'    => true,
 				'css'         => 'width: 400px; height: 65px;',
 			),
-			'tax_status'         => array(
+			'method_logo_id'             => array(
+				'title'             => __( 'Method Logo', 'woo-flexible-shipping' ),
+				'type'              => 'method_logo',
+				'description'       => __( 'Choose an image from the media library to display after the shipping method description in checkout.', 'woo-flexible-shipping' ),
+				'default'           => '',
+				'desc_tip'          => true,
+				'sanitize_callback' => 'absint',
+			),
+			'method_free_shipping'       => array(
+				'title'       => __( 'Free shipping threshold', 'woo-flexible-shipping' ),
+				'type'        => 'text',
+				'placeholder' => '0.00',
+				'description' => __( 'Enter a minimum cart subtotal value which once reached will result in granting customers free shipping.', 'woo-flexible-shipping' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
+			'method_free_shipping_label' => array(
+				'title'       => __( 'Free Shipping Label', 'woo-flexible-shipping' ),
+				'type'        => 'text',
+				'placeholder' => __( 'e.g. Free or Offerte', 'woo-flexible-shipping' ),
+				'description' => __( 'Enter the text for the additional shipping method label which will be displayed once free shipping is granted or calculated cost is 0.00.', 'woo-flexible-shipping' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
+			'tax_status'                 => array(
 				'title'   => __( 'Tax status', 'woo-flexible-shipping' ),
 				'type'    => 'select',
 				'default' => 'taxable',
@@ -124,6 +148,83 @@ class TableRateMethod extends \WC_Shipping_Method {
 	}
 
 	/**
+	 * Generate HTML for method_logo custom field.
+	 *
+	 * @param string $key Field key.
+	 * @param array  $data Field parameters.
+	 * @return string HTML for the field row.
+	 */
+	public function generate_method_logo_html( string $key, array $data ): string {
+		$field_key     = $this->get_field_key( $key );
+		$attachment_id = absint( $this->get_option( $key, 0 ) );
+		$image_url     = '';
+		$image_alt     = '';
+
+		if ( $attachment_id > 0 && function_exists( 'wp_attachment_is_image' ) && wp_attachment_is_image( $attachment_id ) ) {
+			$image = wp_get_attachment_image_src( $attachment_id, 'thumbnail' );
+			if ( is_array( $image ) && ! empty( $image[0] ) ) {
+				$image_url = (string) $image[0];
+			}
+			$image_alt = trim( (string) get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) );
+		}
+
+		$title       = $data['title'] ?? __( 'Method Logo', 'woo-flexible-shipping' );
+		$description = $data['description'] ?? '';
+		$tooltip     = $data['desc_tip'] ?? false;
+
+		$tooltip_html = '';
+		if ( $tooltip && ! empty( $description ) && function_exists( 'wc_help_tip' ) ) {
+			$tooltip_html = wc_help_tip( $description );
+		}
+
+		$select_label = ( $attachment_id > 0 ) ? __( 'Change logo', 'woo-flexible-shipping' ) : __( 'Choose logo', 'woo-flexible-shipping' );
+		$remove_label = __( 'Remove logo', 'woo-flexible-shipping' );
+
+		ob_start();
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo esc_html( $title ); ?> <?php echo $tooltip_html; // WPCS: XSS ok. ?></label>
+			</th>
+			<td class="forminp">
+				<div class="wfs-method-logo-field" data-field-key="<?php echo esc_attr( $field_key ); ?>">
+					<input
+						type="hidden"
+						name="<?php echo esc_attr( $field_key ); ?>"
+						id="<?php echo esc_attr( $field_key ); ?>"
+						value="<?php echo esc_attr( $attachment_id ? $attachment_id : '' ); ?>"
+					/>
+					<div class="wfs-method-logo-field__preview" <?php echo empty( $image_url ) ? 'style="display:none;"' : ''; ?>>
+						<img
+							class="wfs-method-logo-field__image"
+							src="<?php echo esc_url( $image_url ); ?>"
+							alt="<?php echo esc_attr( $image_alt ); ?>"
+							style="max-width:96px;max-height:48px;width:auto;height:auto;display:block;margin-bottom:8px;border:1px solid #dcdcde;border-radius:4px;background:#fff;padding:2px;"
+						/>
+					</div>
+					<p class="wfs-method-logo-field__actions" style="margin:0 0 5px 0;">
+						<button type="button" class="button wfs-method-logo-field__select" data-choose="<?php esc_attr_e( 'Choose logo', 'woo-flexible-shipping' ); ?>" data-change="<?php esc_attr_e( 'Change logo', 'woo-flexible-shipping' ); ?>">
+							<?php echo esc_html( $select_label ); ?>
+						</button>
+						<a
+							href="#"
+							class="button-link-delete wfs-method-logo-field__remove"
+							style="<?php echo empty( $attachment_id ) ? 'display:none;margin-left:10px;' : 'margin-left:10px;'; ?>"
+						>
+							<?php echo esc_html( $remove_label ); ?>
+						</a>
+					</p>
+					<?php if ( ! $tooltip && ! empty( $description ) ) : ?>
+						<p class="description"><?php echo wp_kses_post( $description ); ?></p>
+					<?php endif; ?>
+				</div>
+			</td>
+		</tr>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
 	 * Calculate shipping rate for a package.
 	 *
 	 * @param array $package Package being rated.
@@ -142,7 +243,22 @@ class TableRateMethod extends \WC_Shipping_Method {
 		$surcharge = (float) $result['surcharge'];
 		$total     = max( 0.0, $base_cost + $surcharge );
 
-		if ( ! empty( $result['applied_rules'] ) ) {
+		// Free Shipping Threshold Check
+		$free_shipping_threshold = trim( (string) $this->get_option( 'method_free_shipping', '' ) );
+		$free_shipping_label     = trim( (string) $this->get_option( 'method_free_shipping_label', '' ) );
+		$is_free_shipping        = false;
+
+		if ( '' !== $free_shipping_threshold && is_numeric( $free_shipping_threshold ) ) {
+			$cart_contents_cost = (float) ( $package['contents_cost'] ?? 0.0 );
+			if ( $cart_contents_cost >= (float) $free_shipping_threshold ) {
+				$is_free_shipping = true;
+				$total            = 0.0;
+			}
+		}
+
+		if ( $is_free_shipping ) {
+			$rule_text = function_exists( '__' ) ? __( 'Free Shipping threshold reached', 'woo-flexible-shipping' ) : 'Free Shipping threshold reached';
+		} elseif ( ! empty( $result['applied_rules'] ) ) {
 			$rule_labels = array_column( $result['applied_rules'], 'label' );
 			$rule_text   = implode( '; ', $rule_labels );
 		} else {
@@ -164,6 +280,16 @@ class TableRateMethod extends \WC_Shipping_Method {
 
 		if ( ! empty( $description ) ) {
 			$meta_data['method_description'] = $description;
+		}
+
+		$logo_id = absint( $this->get_option( 'method_logo_id', 0 ) );
+		if ( $logo_id > 0 && function_exists( 'wp_attachment_is_image' ) && wp_attachment_is_image( $logo_id ) ) {
+			$image = wp_get_attachment_image_src( $logo_id, 'thumbnail' );
+			if ( is_array( $image ) && ! empty( $image[0] ) ) {
+				$meta_data['method_logo_url'] = (string) $image[0];
+				$meta_data['method_logo_alt'] = trim( (string) get_post_meta( $logo_id, '_wp_attachment_image_alt', true ) );
+				$meta_data['method_logo_id']  = $logo_id;
+			}
 		}
 
 		$rate_cost  = $total;
@@ -191,9 +317,14 @@ class TableRateMethod extends \WC_Shipping_Method {
 			}
 		}
 
+		$rate_label = $this->title;
+		if ( $total <= 0.0 && ! empty( $free_shipping_label ) ) {
+			$rate_label .= ' (' . $free_shipping_label . ')';
+		}
+
 		$rate = array(
-			'id'        => $this->get_option_key(),
-			'label'     => $this->title,
+			'id'        => $this->get_rate_id(),
+			'label'     => $rate_label,
 			'cost'      => $rate_cost,
 			'package'   => $package,
 			'meta_data' => $meta_data,
