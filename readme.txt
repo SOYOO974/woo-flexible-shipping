@@ -4,7 +4,7 @@ Tags: woocommerce, shipping, table rate, flexible shipping, rate calculation
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.12
+Stable tag: 1.0.13
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,10 @@ Features:
 3. Go to WooCommerce > Settings > Shipping > Table Rate Migration to run 1-Click Import.
 
 == Changelog ==
+
+= 1.0.13 =
+* Fix: Eliminate large vertical spacing on checkout shipping cards by setting top and bottom margins to 0 on shipping method logo images.
+* Fix: Neutralize default paragraph margins in shipping method description and logo wrapper for compact presentation.
 
 = 1.0.12 =
 * Fix: Remove incompatible zone save hook in OrderMetadata to resolve PHP 8 ArgumentCountError when saving shipping zone methods.

@@ -112,15 +112,17 @@ class Plugin {
 		}
 
 		if ( ! empty( $description ) ) {
-			$desc_margin = ! empty( $logo_url ) ? 'margin-bottom: 0;' : '';
+			$formatted_desc = function_exists( 'wpautop' ) ? wpautop( trim( $description ) ) : esc_html( $description );
+			$formatted_desc = str_replace( '<p>', '<p style="margin: 0; padding: 0;">', $formatted_desc );
+			$desc_margin    = ! empty( $logo_url ) ? 'margin-bottom: 0;' : '';
 			echo '<div class="wfs-shipping-method-description shipping-method-description" style="font-size: 0.88em; color: #666; margin-top: 4px; line-height: 1.35;' . esc_attr( $desc_margin ) . '">'
-				. wp_kses_post( function_exists( 'wpautop' ) ? wpautop( trim( $description ) ) : esc_html( $description ) )
+				. wp_kses_post( $formatted_desc )
 				. '</div>';
 		}
 
 		if ( ! empty( $logo_url ) ) {
-			echo '<p class="wfs-shipping-method-logo shipping-method-logo" style="margin: 4px 0 0 0;">'
-				. '<img src="' . esc_url( $logo_url ) . '" alt="' . esc_attr( $logo_alt ) . '" style="max-width:96px;max-height:48px;width:auto;height:auto;" />'
+			echo '<p class="wfs-shipping-method-logo shipping-method-logo" style="margin: 4px 0 0 0 !important; padding: 0 !important; line-height: 1 !important;">'
+				. '<img src="' . esc_url( $logo_url ) . '" alt="' . esc_attr( $logo_alt ) . '" style="max-width:96px;max-height:48px;width:auto;height:auto;margin:0 !important;margin-top:0 !important;margin-bottom:0 !important;display:inline-block;vertical-align:middle;" />'
 				. '</p>';
 		}
 	}
