@@ -37,13 +37,13 @@ class AdminMigrationPage {
 	}
 
 	/**
-	 * Add "Table Rate Migration" section to WooCommerce Shipping settings.
+	 * Add "Flexible Shipping" section to WooCommerce Shipping settings.
 	 *
 	 * @param array $sections Existing sections.
 	 * @return array Modified sections.
 	 */
 	public function add_shipping_section( array $sections ): array {
-		$sections['wfs_migration'] = __( 'Table Rate Migration', 'woo-flexible-shipping' );
+		$sections['wfs_migration'] = __( 'Flexible Shipping', 'woo-flexible-shipping' );
 		return $sections;
 	}
 
@@ -100,7 +100,7 @@ class AdminMigrationPage {
 
 		<div class="wrap wfs-migration-wrapper" style="max-width: 920px; margin-top: 15px;">
 
-			<form method="post" action="">
+			<form method="post" action="" onsubmit="window.onbeforeunload = null; if (typeof jQuery !== 'undefined') { jQuery(window).off('beforeunload'); }">
 				<?php wp_nonce_field( 'wfs_migrate_action', 'wfs_migrate_nonce' ); ?>
 
 				<?php if ( $settings_saved ) : ?>
@@ -163,7 +163,7 @@ class AdminMigrationPage {
 					</table>
 
 					<div style="margin-top: 14px;">
-						<button type="submit" name="wfs_save_global_settings" value="1" class="button button-primary" style="font-weight: 600; height: 38px; padding: 0 20px; font-size: 13px; border-radius: 6px;">
+						<button type="submit" name="wfs_save_global_settings" value="1" class="button button-primary" onclick="window.onbeforeunload = null; if (typeof jQuery !== 'undefined') { jQuery(window).off('beforeunload'); }" style="font-weight: 600; height: 38px; padding: 0 20px; font-size: 13px; border-radius: 6px;">
 							<?php esc_html_e( 'Save Coupon Rules', 'woo-flexible-shipping' ); ?>
 						</button>
 					</div>
@@ -247,7 +247,7 @@ class AdminMigrationPage {
 						</span>
 					</div>
 
-					<button type="submit" name="wfs_run_migration" value="1" class="button button-primary button-large" style="font-weight: 600; height: 42px; padding: 0 24px; font-size: 14px; border-radius: 6px;">
+					<button type="submit" name="wfs_run_migration" value="1" class="button button-primary button-large" onclick="window.onbeforeunload = null; if (typeof jQuery !== 'undefined') { jQuery(window).off('beforeunload'); }" style="font-weight: 600; height: 42px; padding: 0 24px; font-size: 14px; border-radius: 6px;">
 						<?php esc_html_e( 'Import from Flexible Shipping PRO', 'woo-flexible-shipping' ); ?>
 					</button>
 				</div>

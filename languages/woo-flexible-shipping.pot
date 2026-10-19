@@ -109,6 +109,10 @@ msgstr ""
 msgid "Table Rate Migration"
 msgstr ""
 
+#: src/Migration/AdminMigrationPage.php:45
+msgid "Flexible Shipping"
+msgstr ""
+
 #: src/Migration/AdminMigrationPage.php:48
 msgid "1-Click Flexible Shipping PRO Migration Assistant"
 msgstr ""

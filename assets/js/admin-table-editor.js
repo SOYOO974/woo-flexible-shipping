@@ -247,6 +247,11 @@ jQuery( document ).ready( function( $ ) {
 			$select.off( 'change.wfsCoupon' ).on( 'change.wfsCoupon', updateCouponToggle );
 			updateCouponToggle();
 		} );
+
+		$( '.wfs-migration-wrapper' ).off( 'click.wfsSubmit', 'button[type="submit"]' ).on( 'click.wfsSubmit', 'button[type="submit"]', function() {
+			window.onbeforeunload = null;
+			$( window ).off( 'beforeunload' );
+		} );
 	}
 
 	// Initialize on page load.

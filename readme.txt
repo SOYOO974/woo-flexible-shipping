@@ -4,7 +4,7 @@ Tags: woocommerce, shipping, table rate, flexible shipping, rate calculation
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.15
+Stable tag: 1.0.16
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,9 +27,13 @@ Features:
 
 1. Upload `woo-flexible-shipping` to `/wp-content/plugins/`.
 2. Activate the plugin via WordPress Admin > Plugins.
-3. Go to WooCommerce > Settings > Shipping > Table Rate Migration to run 1-Click Import.
+3. Go to WooCommerce > Settings > Shipping > Flexible Shipping to configure global coupon rules or run 1-Click Import.
 
 == Changelog ==
+
+= 1.0.16 =
+* Rename the WooCommerce Shipping settings sub-tab from "Table Rate Migration" ("Migration Flexible Shipping") to "Flexible Shipping".
+* Fix WooCommerce `beforeunload` ("Leave site?") browser warning popup when saving Global Coupon & Loyalty Voucher Rules.
 
 = 1.0.15 =
 * Add direct "Settings" ("Réglages") action link under the plugin name on the WordPress Plugins page pointing to the plugin settings and migration tab.
