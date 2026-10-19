@@ -66,6 +66,7 @@ class Plugin {
 
 		// Initialize Admin Assets & Migration UI.
 		if ( is_admin() ) {
+			add_filter( 'plugin_action_links_' . plugin_basename( WFS_PLUGIN_FILE ), array( $this, 'add_plugin_action_links' ) );
 			( new Assets() )->init();
 			( new AdminMigrationPage() )->init();
 		}
@@ -77,6 +78,21 @@ class Plugin {
 		if ( ! file_exists( WFS_PLUGIN_DIR . 'plugin-update-checker/plugin-update-checker.php' ) ) {
 			( new PluginUpdater( WFS_PLUGIN_FILE, WFS_VERSION ) )->init();
 		}
+	}
+
+	/**
+	 * Add a direct "Settings" ("Réglages") link to the plugin action links on the Plugins page.
+	 *
+	 * @param array $links Existing plugin action links.
+	 * @return array Modified plugin action links.
+	 */
+	public function add_plugin_action_links( array $links ): array {
+		$settings_url  = function_exists( 'admin_url' )
+			? admin_url( 'admin.php?page=wc-settings&tab=shipping&section=wfs_migration' )
+			: 'admin.php?page=wc-settings&tab=shipping&section=wfs_migration';
+		$settings_link = '<a href="' . esc_url( $settings_url ) . '">' . esc_html__( 'Settings', 'woo-flexible-shipping' ) . '</a>';
+		array_unshift( $links, $settings_link );
+		return $links;
 	}
 
 	/**

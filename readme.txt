@@ -4,7 +4,7 @@ Tags: woocommerce, shipping, table rate, flexible shipping, rate calculation
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.14
+Stable tag: 1.0.15
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,9 @@ Features:
 3. Go to WooCommerce > Settings > Shipping > Table Rate Migration to run 1-Click Import.
 
 == Changelog ==
+
+= 1.0.15 =
+* Add direct "Settings" ("Réglages") action link under the plugin name on the WordPress Plugins page pointing to the plugin settings and migration tab.
 
 = 1.0.14 =
 * Add Global & Per-Method Coupon & Loyalty Voucher Rules (`apply_all`, `ignore_patterns`, `ignore_all`) with comma-separated text pattern matching (e.g. `5EUR, 10EUR, FID`).

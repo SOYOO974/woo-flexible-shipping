@@ -273,4 +273,9 @@ msgstr ""
 msgid "Tier Base:"
 msgstr ""
 
+#: src/Plugin.php:93
+msgid "Settings"
+msgstr ""
+
+
 

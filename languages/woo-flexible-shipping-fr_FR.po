@@ -281,4 +281,9 @@ msgstr "Modifier le logo"
 msgid "Remove logo"
 msgstr "Supprimer le logo"
 
+#: src/Plugin.php:93
+msgid "Settings"
+msgstr "Réglages"
+
+
 
