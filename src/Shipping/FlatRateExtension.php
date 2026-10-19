@@ -185,7 +185,11 @@ class FlatRateExtension {
 
 			$rules = is_array( $raw_rules ) ? $raw_rules : json_decode( (string) $raw_rules, true );
 
-			$result = $this->engine->calculate( $package, is_array( $rules ) ? $rules : array(), $settings );
+			$cart_prices_include_tax = ( ( $settings['prices_include_tax'] ?? 'no' ) === 'yes' )
+				|| ( function_exists( 'wc_prices_include_tax' ) ? wc_prices_include_tax() : true )
+				|| ( function_exists( 'WC' ) && isset( WC()->cart ) && is_object( WC()->cart ) && method_exists( WC()->cart, 'display_prices_including_tax' ) && WC()->cart->display_prices_including_tax() );
+
+			$result = $this->engine->calculate( $package, is_array( $rules ) ? $rules : array(), $settings, $cart_prices_include_tax );
 
 			$base_cost = (float) $rate->cost;
 			$surcharge = (float) $result['surcharge'];

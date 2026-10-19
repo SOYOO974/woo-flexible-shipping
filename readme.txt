@@ -4,7 +4,7 @@ Tags: woocommerce, shipping, table rate, flexible shipping, rate calculation
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.16
+Stable tag: 1.0.17
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,9 @@ Features:
 3. Go to WooCommerce > Settings > Shipping > Flexible Shipping to configure global coupon rules or run 1-Click Import.
 
 == Changelog ==
+
+= 1.0.17 =
+* Fix: Include cart item taxes (`line_tax` and `line_subtotal_tax`) and tax-inclusive coupon discounts (`ex_tax = false`) in `CalculationEngine` so TTC cart totals (e.g., 151.18 € TTC / 148.07 € HT) properly trigger TTC shipping tiers and free shipping thresholds.
 
 = 1.0.16 =
 * Rename the WooCommerce Shipping settings sub-tab from "Table Rate Migration" ("Migration Flexible Shipping") to "Flexible Shipping".

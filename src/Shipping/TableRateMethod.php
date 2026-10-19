@@ -265,8 +265,12 @@ class TableRateMethod extends \WC_Shipping_Method {
 			'wfs_ignored_coupon_patterns' => $this->get_option( 'wfs_ignored_coupon_patterns', '' ),
 		);
 
+		$cart_prices_include_tax = ( 'yes' === $prices_include_tax )
+			|| ( function_exists( 'wc_prices_include_tax' ) ? wc_prices_include_tax() : true )
+			|| ( function_exists( 'WC' ) && isset( WC()->cart ) && is_object( WC()->cart ) && method_exists( WC()->cart, 'display_prices_including_tax' ) && WC()->cart->display_prices_including_tax() );
+
 		$engine = new CalculationEngine();
-		$result = $engine->calculate( $package, is_array( $rules ) ? $rules : array(), $coupon_settings );
+		$result = $engine->calculate( $package, is_array( $rules ) ? $rules : array(), $coupon_settings, $cart_prices_include_tax );
 
 		$surcharge = (float) $result['surcharge'];
 		$total     = max( 0.0, $base_cost + $surcharge );

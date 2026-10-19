@@ -24,10 +24,11 @@ class CalculationEngine {
 	 * @param array $package WooCommerce shipping package.
 	 * @param array $rules Array of configured rule definitions.
 	 * @param array $coupon_settings Optional coupon handling settings from method instance.
+	 * @param bool  $prices_include_tax Whether to evaluate cart price metrics inclusive of tax (TTC).
 	 * @return array Result containing total surcharge, metrics, and applied rules breakdown.
 	 */
-	public function calculate( array $package, array $rules, array $coupon_settings = array() ): array {
-		$metrics = $this->extract_package_metrics( $package, $coupon_settings );
+	public function calculate( array $package, array $rules, array $coupon_settings = array(), bool $prices_include_tax = true ): array {
+		$metrics = $this->extract_package_metrics( $package, $coupon_settings, $prices_include_tax );
 
 		$total_surcharge = 0.0;
 		$applied_rules   = array();
@@ -113,9 +114,14 @@ class CalculationEngine {
 	 *
 	 * @param array $package Shipping package.
 	 * @param array $coupon_settings Optional coupon handling settings.
+	 * @param bool  $prices_include_tax Whether to include item taxes (TTC) in price metrics.
 	 * @return array Metrics array including effective price and coupon neutralization details.
 	 */
-	public function extract_package_metrics( array $package, array $coupon_settings = array() ): array {
+	public function extract_package_metrics( array $package, array $coupon_settings = array(), bool $prices_include_tax = true ): array {
+		if ( function_exists( 'apply_filters' ) ) {
+			$prices_include_tax = (bool) apply_filters( 'wfs_cart_metrics_include_tax', $prices_include_tax, $package, $coupon_settings );
+		}
+
 		$item_count    = 0.0;
 		$weight        = 0.0;
 		$line_total    = 0.0;
@@ -131,8 +137,24 @@ class CalculationEngine {
 					$weight     += ( $item_weight * $qty );
 				}
 
-				$item_total    = isset( $item['line_total'] ) ? (float) $item['line_total'] : ( isset( $item['line_subtotal'] ) ? (float) $item['line_subtotal'] : 0.0 );
-				$item_subtotal = isset( $item['line_subtotal'] ) ? (float) $item['line_subtotal'] : $item_total;
+				$has_line_total    = isset( $item['line_total'] );
+				$has_line_subtotal = isset( $item['line_subtotal'] );
+
+				$item_total = $has_line_total ? (float) $item['line_total'] : ( $has_line_subtotal ? (float) $item['line_subtotal'] : 0.0 );
+				if ( $prices_include_tax ) {
+					$item_total += $has_line_total
+						? (float) ( $item['line_tax'] ?? 0.0 )
+						: (float) ( $item['line_subtotal_tax'] ?? 0.0 );
+				}
+
+				if ( $has_line_subtotal ) {
+					$item_subtotal = (float) $item['line_subtotal'];
+					if ( $prices_include_tax ) {
+						$item_subtotal += (float) ( $item['line_subtotal_tax'] ?? 0.0 );
+					}
+				} else {
+					$item_subtotal = $item_total;
+				}
 
 				$line_total    += $item_total;
 				$line_subtotal += $item_subtotal;
@@ -173,7 +195,7 @@ class CalculationEngine {
 				$ignored_discount = $line_subtotal - $line_total;
 			} elseif ( ! empty( $ignored_coupons ) ) {
 				foreach ( $ignored_coupons as $ignored_code ) {
-					$ignored_discount += $this->get_single_coupon_discount( $ignored_code, $package );
+					$ignored_discount += $this->get_single_coupon_discount( $ignored_code, $package, $prices_include_tax );
 				}
 			}
 		} elseif ( self::COUPON_MODE_IGNORE_PATTERNS === $mode && ! empty( $applied_coupons ) ) {
@@ -191,7 +213,7 @@ class CalculationEngine {
 					$ignored_discount = $line_subtotal - $line_total;
 				} else {
 					foreach ( $ignored_coupons as $ignored_code ) {
-						$ignored_discount += $this->get_single_coupon_discount( $ignored_code, $package );
+						$ignored_discount += $this->get_single_coupon_discount( $ignored_code, $package, $prices_include_tax );
 					}
 					if ( $line_subtotal > $line_total ) {
 						$ignored_discount = min( $ignored_discount, $line_subtotal - $line_total );
@@ -304,9 +326,10 @@ class CalculationEngine {
 	 *
 	 * @param string $coupon_code Coupon code.
 	 * @param array  $package Shipping package.
-	 * @return float Discount amount (ex-tax basis matching package line_total).
+	 * @param bool   $prices_include_tax Whether to retrieve the coupon discount inclusive of tax (TTC).
+	 * @return float Discount amount matching package tax basis.
 	 */
-	private function get_single_coupon_discount( string $coupon_code, array $package ): float {
+	private function get_single_coupon_discount( string $coupon_code, array $package, bool $prices_include_tax = true ): float {
 		if ( isset( $package['coupon_discounts'] ) && is_array( $package['coupon_discounts'] ) ) {
 			foreach ( $package['coupon_discounts'] as $code => $amount ) {
 				if ( 0 === strcasecmp( (string) $code, $coupon_code ) ) {
@@ -316,7 +339,7 @@ class CalculationEngine {
 		}
 
 		if ( function_exists( 'WC' ) && isset( WC()->cart ) && is_object( WC()->cart ) && method_exists( WC()->cart, 'get_coupon_discount_amount' ) ) {
-			return max( 0.0, (float) WC()->cart->get_coupon_discount_amount( $coupon_code, true ) );
+			return max( 0.0, (float) WC()->cart->get_coupon_discount_amount( $coupon_code, ! $prices_include_tax ) );
 		}
 
 		return 0.0;
