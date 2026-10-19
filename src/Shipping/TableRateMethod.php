@@ -94,6 +94,29 @@ class TableRateMethod extends \WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
+			'wfs_coupon_handling'        => array(
+				'title'       => __( 'Coupons & Loyalty Vouchers', 'woo-flexible-shipping' ),
+				'type'        => 'select',
+				'class'       => 'wfs-coupon-handling-select',
+				'default'     => CalculationEngine::COUPON_MODE_INHERIT,
+				'options'     => array(
+					CalculationEngine::COUPON_MODE_INHERIT         => __( 'Use global plugin setting (Default)', 'woo-flexible-shipping' ),
+					CalculationEngine::COUPON_MODE_APPLY_ALL       => __( 'Deduct all coupons (net discounted amount)', 'woo-flexible-shipping' ),
+					CalculationEngine::COUPON_MODE_IGNORE_PATTERNS => __( 'Ignore specific coupons matching text patterns (e.g. loyalty)', 'woo-flexible-shipping' ),
+					CalculationEngine::COUPON_MODE_IGNORE_ALL      => __( 'Ignore all coupons (pre-discount subtotal)', 'woo-flexible-shipping' ),
+				),
+				'description' => __( 'Choose whether promo codes and loyalty vouchers reduce the cart amount used for shipping tiers and free shipping threshold.', 'woo-flexible-shipping' ),
+				'desc_tip'    => true,
+			),
+			'wfs_ignored_coupon_patterns' => array(
+				'title'       => __( 'Ignored Coupon Text Patterns', 'woo-flexible-shipping' ),
+				'type'        => 'text',
+				'class'       => 'wfs-ignored-coupon-patterns-input',
+				'placeholder' => __( 'e.g. 5EUR, 10EUR, FID', 'woo-flexible-shipping' ),
+				'default'     => '',
+				'description' => __( 'Comma-separated list of text fragments (case-insensitive). Any applied coupon containing one of these texts will not reduce the order amount for shipping calculations.', 'woo-flexible-shipping' ),
+				'desc_tip'    => true,
+			),
 			'tax_status'                 => array(
 				'title'   => __( 'Tax status', 'woo-flexible-shipping' ),
 				'type'    => 'select',
@@ -237,20 +260,27 @@ class TableRateMethod extends \WC_Shipping_Method {
 		$raw_rules          = $this->get_option( 'wfs_method_rules', '[]' );
 		$rules              = is_array( $raw_rules ) ? $raw_rules : json_decode( $raw_rules, true );
 
+		$coupon_settings = array(
+			'wfs_coupon_handling'         => $this->get_option( 'wfs_coupon_handling', CalculationEngine::COUPON_MODE_INHERIT ),
+			'wfs_ignored_coupon_patterns' => $this->get_option( 'wfs_ignored_coupon_patterns', '' ),
+		);
+
 		$engine = new CalculationEngine();
-		$result = $engine->calculate( $package, is_array( $rules ) ? $rules : array() );
+		$result = $engine->calculate( $package, is_array( $rules ) ? $rules : array(), $coupon_settings );
 
 		$surcharge = (float) $result['surcharge'];
 		$total     = max( 0.0, $base_cost + $surcharge );
 
-		// Free Shipping Threshold Check
+		// Free Shipping Threshold Check (uses unified effective price from CalculationEngine)
 		$free_shipping_threshold = trim( (string) $this->get_option( 'method_free_shipping', '' ) );
 		$free_shipping_label     = trim( (string) $this->get_option( 'method_free_shipping_label', '' ) );
 		$is_free_shipping        = false;
 
 		if ( '' !== $free_shipping_threshold && is_numeric( $free_shipping_threshold ) ) {
-			$cart_contents_cost = (float) ( $package['contents_cost'] ?? 0.0 );
-			if ( $cart_contents_cost >= (float) $free_shipping_threshold ) {
+			$effective_cart_price = isset( $result['metrics']['price'] )
+				? (float) $result['metrics']['price']
+				: (float) ( $package['contents_cost'] ?? 0.0 );
+			if ( $effective_cart_price >= (float) $free_shipping_threshold ) {
 				$is_free_shipping = true;
 				$total            = 0.0;
 			}
@@ -272,6 +302,12 @@ class TableRateMethod extends \WC_Shipping_Method {
 			'rule_applied'  => $rule_text,
 			'applied_rules' => $result['applied_rules'],
 		);
+
+		if ( ! empty( $result['metrics']['ignored_coupons'] ) && ( $result['metrics']['ignored_discount'] ?? 0.0 ) > 0.0 ) {
+			$breakdown['ignored_coupons']  = array_values( $result['metrics']['ignored_coupons'] );
+			$breakdown['ignored_discount'] = wc_price( (float) $result['metrics']['ignored_discount'] );
+			$breakdown['effective_price']  = wc_price( (float) $result['metrics']['price'] );
+		}
 
 		$meta_data = array(
 			'fs_costs'          => json_encode( $breakdown, JSON_UNESCAPED_UNICODE ),

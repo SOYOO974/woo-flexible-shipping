@@ -225,14 +225,40 @@ jQuery( document ).ready( function( $ ) {
 		} );
 	}
 
+	function initCouponHandlingToggle() {
+		var $couponSelects = $( 'select[name*="wfs_coupon_handling"], #wfs_global_coupon_handling' );
+		if ( ! $couponSelects.length ) return;
+
+		$couponSelects.each( function() {
+			var $select = $( this );
+
+			function updateCouponToggle() {
+				var val = $select.val();
+				var $table = $select.closest( 'table' );
+				var $patternRow = $table.find( 'input[name*="wfs_ignored_coupon_patterns"], #wfs_global_ignored_coupon_patterns' ).closest( 'tr' );
+
+				if ( 'ignore_patterns' === val ) {
+					$patternRow.show();
+				} else {
+					$patternRow.hide();
+				}
+			}
+
+			$select.off( 'change.wfsCoupon' ).on( 'change.wfsCoupon', updateCouponToggle );
+			updateCouponToggle();
+		} );
+	}
+
 	// Initialize on page load.
 	initTableEditors();
 	initTaxStatusToggle();
+	initCouponHandlingToggle();
 	initMethodLogoField();
 
 	$( document ).ajaxComplete( function() {
 		initTableEditors();
 		initTaxStatusToggle();
+		initCouponHandlingToggle();
 		initMethodLogoField();
 	} );
 } );

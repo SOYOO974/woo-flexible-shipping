@@ -147,3 +147,138 @@ msgstr "En cliquant sur le bouton ci-dessous, le système analysera toutes les z
 #: src/Migration/AdminMigrationPage.php:97
 msgid "Import from Flexible Shipping PRO"
 msgstr "Importer depuis Flexible Shipping PRO"
+
+#: src/Shipping/TableRateMethod.php:82
+msgid "Free shipping threshold"
+msgstr "Seuil de livraison gratuite (€)"
+
+#: src/Shipping/TableRateMethod.php:85
+msgid "Enter a minimum cart subtotal value which once reached will result in granting customers free shipping."
+msgstr "Saisissez le montant minimum de commande à partir duquel la livraison devient gratuite."
+
+#: src/Shipping/TableRateMethod.php:90
+msgid "Free Shipping Label"
+msgstr "Libellé de livraison gratuite"
+
+#: src/Shipping/TableRateMethod.php:92
+msgid "e.g. Free or Offerte"
+msgstr "ex. Gratuite ou Offerte"
+
+#: src/Shipping/TableRateMethod.php:93
+msgid "Enter the text for the additional shipping method label which will be displayed once free shipping is granted or calculated cost is 0.00."
+msgstr "Texte affiché à côté du nom du mode de livraison lorsque la livraison est gratuite (0,00 €)."
+
+#: src/Shipping/TableRateMethod.php:98
+#: src/Shipping/FlatRateExtension.php:87
+#: src/Migration/AdminMigrationPage.php:125
+msgid "Coupons & Loyalty Vouchers"
+msgstr "Codes promo & Bons de fidélité"
+
+#: src/Shipping/TableRateMethod.php:103
+#: src/Shipping/FlatRateExtension.php:92
+msgid "Use global plugin setting (Default)"
+msgstr "Utiliser le réglage global du plugin (Par défaut)"
+
+#: src/Shipping/TableRateMethod.php:104
+#: src/Shipping/FlatRateExtension.php:93
+#: src/Migration/AdminMigrationPage.php:130
+msgid "Deduct all coupons (net discounted amount)"
+msgstr "Déduire tous les codes promo (calcul sur le montant net remisé)"
+
+#: src/Shipping/TableRateMethod.php:105
+#: src/Shipping/FlatRateExtension.php:94
+#: src/Migration/AdminMigrationPage.php:133
+msgid "Ignore specific coupons matching text patterns (e.g. loyalty)"
+msgstr "Ignorer certains codes promo selon leur texte (ex. bons de fidélité)"
+
+#: src/Shipping/TableRateMethod.php:106
+#: src/Shipping/FlatRateExtension.php:95
+#: src/Migration/AdminMigrationPage.php:136
+msgid "Ignore all coupons (pre-discount subtotal)"
+msgstr "Ignorer tous les codes promo (calcul sur le sous-total avant remise)"
+
+#: src/Shipping/TableRateMethod.php:108
+msgid "Choose whether promo codes and loyalty vouchers reduce the cart amount used for shipping tiers and free shipping threshold."
+msgstr "Choisissez si les codes promo et bons de fidélité réduisent le montant du panier utilisé pour les paliers et le seuil de livraison gratuite."
+
+#: src/Shipping/FlatRateExtension.php:97
+msgid "Choose whether promo codes and loyalty vouchers reduce the cart amount used for shipping tiers."
+msgstr "Choisissez si les codes promo et bons de fidélité réduisent le montant du panier utilisé pour les paliers de livraison."
+
+#: src/Shipping/TableRateMethod.php:112
+#: src/Shipping/FlatRateExtension.php:102
+#: src/Migration/AdminMigrationPage.php:142
+msgid "Ignored Coupon Text Patterns"
+msgstr "Textes des codes promo à ignorer"
+
+#: src/Shipping/TableRateMethod.php:115
+#: src/Shipping/FlatRateExtension.php:105
+#: src/Migration/AdminMigrationPage.php:151
+msgid "e.g. 5EUR, 10EUR, FID"
+msgstr "ex. 5EUR, 10EUR, FID"
+
+#: src/Shipping/TableRateMethod.php:117
+#: src/Shipping/FlatRateExtension.php:107
+msgid "Comma-separated list of text fragments (case-insensitive). Any applied coupon containing one of these texts will not reduce the order amount for shipping calculations."
+msgstr "Liste de textes séparés par des virgules (insensible à la casse). Tout code promo contenant l'un de ces textes ne réduira pas le montant pris en compte pour le calcul de la livraison."
+
+#: src/Migration/AdminMigrationPage.php:107
+msgid "Global coupon & loyalty voucher rules saved successfully."
+msgstr "Règles globales des codes promo et bons de fidélité enregistrées avec succès."
+
+#: src/Migration/AdminMigrationPage.php:115
+msgid "Global Coupon & Loyalty Voucher Rules"
+msgstr "Règles globales : Codes promo & Bons de fidélité"
+
+#: src/Migration/AdminMigrationPage.php:118
+msgid "Define how promo codes and loyalty vouchers affect the cart amount used to evaluate shipping tiers and free shipping thresholds across all shipping methods (unless overridden inside a specific shipping method)."
+msgstr "Définissez comment les codes promo et bons d'achat de fidélité impactent le montant de commande utilisé pour calculer les paliers de livraison et le franco de port sur toutes les méthodes (sauf surcharge spécifique dans une méthode)."
+
+#: src/Migration/AdminMigrationPage.php:155
+msgid "Comma-separated list of text fragments (case-insensitive). If an applied coupon contains one of these texts (e.g. \"5EUR\" for loyalty vouchers), its discount will not reduce the order amount used for shipping tiers and free shipping thresholds. Other marketing coupons will still be deducted normally."
+msgstr "Textes séparés par des virgules (insensible à la casse). Si un code appliqué contient l'un de ces textes (ex. « 5EUR » pour les bons de fidélité), sa remise ne sera pas déduite du montant de commande servant au calcul des paliers et de la livraison gratuite. Les autres codes promo marketing resteront déduits normalement."
+
+#: src/Migration/AdminMigrationPage.php:163
+msgid "Save Coupon Rules"
+msgstr "Enregistrer les règles de codes promo"
+
+#: src/Shipping/TableRateMethod.php:290
+msgid "Free Shipping threshold reached"
+msgstr "Seuil de livraison gratuite atteint"
+
+#: src/Shipping/TableRateMethod.php:295
+#: src/Shipping/FlatRateExtension.php:182
+msgid "Base Shipping Only (No tier surcharge applied)"
+msgstr "Tarif de base uniquement (Aucun palier appliqué)"
+
+#: src/Shipping/OrderMetadata.php:136
+msgid "Neutralized Coupons (Tier Base):"
+msgstr "Codes promo neutralisés (calcul palier) :"
+
+#: src/Shipping/OrderMetadata.php:140
+msgid "Tier Base:"
+msgstr "Assiette retenue :"
+
+#: src/Shipping/TableRateMethod.php:74
+msgid "Method Logo"
+msgstr "Logo de la méthode"
+
+#: src/Shipping/TableRateMethod.php:76
+msgid "Choose an image from the media library to display after the shipping method description in checkout."
+msgstr "Choisissez une image de la médiathèque à afficher sous la description du mode de livraison au checkout."
+
+#: src/Shipping/TableRateMethod.php:180
+#: src/Admin/Assets.php:64
+msgid "Choose logo"
+msgstr "Choisir un logo"
+
+#: src/Shipping/TableRateMethod.php:180
+#: src/Admin/Assets.php:65
+msgid "Change logo"
+msgstr "Modifier le logo"
+
+#: src/Shipping/TableRateMethod.php:181
+msgid "Remove logo"
+msgstr "Supprimer le logo"
+
+

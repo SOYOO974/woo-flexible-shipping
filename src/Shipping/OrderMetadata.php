@@ -129,6 +129,20 @@ class OrderMetadata {
 		if ( isset( $data['additional'] ) ) {
 			echo esc_html__( 'Tier Surcharge:', 'woo-flexible-shipping' ) . ' <strong>' . esc_html( wp_strip_all_tags( $data['additional'] ) ) . '</strong><br/>';
 		}
+		if ( ! empty( $data['ignored_coupons'] ) && is_array( $data['ignored_coupons'] ) ) {
+			$coupons_list = implode( ', ', array_map( 'sanitize_text_field', $data['ignored_coupons'] ) );
+			$discount_txt = ! empty( $data['ignored_discount'] ) ? wp_strip_all_tags( (string) $data['ignored_discount'] ) : '';
+			$eff_txt      = ! empty( $data['effective_price'] ) ? wp_strip_all_tags( (string) $data['effective_price'] ) : '';
+			echo esc_html__( 'Neutralized Coupons (Tier Base):', 'woo-flexible-shipping' ) . ' <strong>' . esc_html( $coupons_list ) . '</strong>';
+			if ( '' !== $discount_txt ) {
+				echo ' <span style="color:#0f766e; font-weight:600;">(+' . esc_html( $discount_txt );
+				if ( '' !== $eff_txt ) {
+					echo ' &rarr; ' . esc_html__( 'Tier Base:', 'woo-flexible-shipping' ) . ' ' . esc_html( $eff_txt );
+				}
+				echo ')</span>';
+			}
+			echo '<br/>';
+		}
 		if ( ! empty( $data['rule_applied'] ) ) {
 			echo '<span style="color:#475569;"><em>' . esc_html__( 'Rule Applied:', 'woo-flexible-shipping' ) . ' ' . esc_html( $data['rule_applied'] ) . '</em></span>';
 		}

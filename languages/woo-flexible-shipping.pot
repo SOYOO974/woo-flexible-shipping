@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Woo Flexible Shipping Table Rate 1.0.13\n"
+"Project-Id-Version: Woo Flexible Shipping Table Rate 1.0.14\n"
 "Report-Msgid-Bugs-To: https://github.com/agency/woo-flexible-shipping\n"
 "POT-Creation-Date: 2026-10-01 12:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -187,7 +187,90 @@ msgstr ""
 msgid "Enter the text for the additional shipping method label which will be displayed once free shipping is granted or calculated cost is 0.00."
 msgstr ""
 
-#: src/Shipping/TableRateMethod.php:260
+#: src/Shipping/TableRateMethod.php:290
 msgid "Free Shipping threshold reached"
 msgstr ""
+
+#: src/Shipping/TableRateMethod.php:98
+#: src/Shipping/FlatRateExtension.php:87
+#: src/Migration/AdminMigrationPage.php:125
+msgid "Coupons & Loyalty Vouchers"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:103
+#: src/Shipping/FlatRateExtension.php:92
+msgid "Use global plugin setting (Default)"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:104
+#: src/Shipping/FlatRateExtension.php:93
+#: src/Migration/AdminMigrationPage.php:130
+msgid "Deduct all coupons (net discounted amount)"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:105
+#: src/Shipping/FlatRateExtension.php:94
+#: src/Migration/AdminMigrationPage.php:133
+msgid "Ignore specific coupons matching text patterns (e.g. loyalty)"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:106
+#: src/Shipping/FlatRateExtension.php:95
+#: src/Migration/AdminMigrationPage.php:136
+msgid "Ignore all coupons (pre-discount subtotal)"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:108
+msgid "Choose whether promo codes and loyalty vouchers reduce the cart amount used for shipping tiers and free shipping threshold."
+msgstr ""
+
+#: src/Shipping/FlatRateExtension.php:97
+msgid "Choose whether promo codes and loyalty vouchers reduce the cart amount used for shipping tiers."
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:112
+#: src/Shipping/FlatRateExtension.php:102
+#: src/Migration/AdminMigrationPage.php:142
+msgid "Ignored Coupon Text Patterns"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:115
+#: src/Shipping/FlatRateExtension.php:105
+#: src/Migration/AdminMigrationPage.php:151
+msgid "e.g. 5EUR, 10EUR, FID"
+msgstr ""
+
+#: src/Shipping/TableRateMethod.php:117
+#: src/Shipping/FlatRateExtension.php:107
+msgid "Comma-separated list of text fragments (case-insensitive). Any applied coupon containing one of these texts will not reduce the order amount for shipping calculations."
+msgstr ""
+
+#: src/Migration/AdminMigrationPage.php:107
+msgid "Global coupon & loyalty voucher rules saved successfully."
+msgstr ""
+
+#: src/Migration/AdminMigrationPage.php:115
+msgid "Global Coupon & Loyalty Voucher Rules"
+msgstr ""
+
+#: src/Migration/AdminMigrationPage.php:118
+msgid "Define how promo codes and loyalty vouchers affect the cart amount used to evaluate shipping tiers and free shipping thresholds across all shipping methods (unless overridden inside a specific shipping method)."
+msgstr ""
+
+#: src/Migration/AdminMigrationPage.php:155
+msgid "Comma-separated list of text fragments (case-insensitive). If an applied coupon contains one of these texts (e.g. \"5EUR\" for loyalty vouchers), its discount will not reduce the order amount used for shipping tiers and free shipping thresholds. Other marketing coupons will still be deducted normally."
+msgstr ""
+
+#: src/Migration/AdminMigrationPage.php:163
+msgid "Save Coupon Rules"
+msgstr ""
+
+#: src/Shipping/OrderMetadata.php:136
+msgid "Neutralized Coupons (Tier Base):"
+msgstr ""
+
+#: src/Shipping/OrderMetadata.php:140
+msgid "Tier Base:"
+msgstr ""
+
 

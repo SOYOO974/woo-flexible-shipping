@@ -4,7 +4,7 @@ Tags: woocommerce, shipping, table rate, flexible shipping, rate calculation
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.13
+Stable tag: 1.0.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,12 @@ Features:
 3. Go to WooCommerce > Settings > Shipping > Table Rate Migration to run 1-Click Import.
 
 == Changelog ==
+
+= 1.0.14 =
+* Add Global & Per-Method Coupon & Loyalty Voucher Rules (`apply_all`, `ignore_patterns`, `ignore_all`) with comma-separated text pattern matching (e.g. `5EUR, 10EUR, FID`).
+* Surgically reintegrate ignored coupon discounts into cart subtotal calculation while keeping marketing coupon deductions intact.
+* Unify Free Shipping threshold (`method_free_shipping`) and Table Rate Rules Matrix (`wfs_method_rules`) under the same effective cart subtotal calculation.
+* Add order shipping metadata traceability for neutralized coupons in admin order breakdown.
 
 = 1.0.13 =
 * Fix: Eliminate large vertical spacing on checkout shipping cards by setting top and bottom margins to 0 on shipping method logo images.

@@ -83,6 +83,31 @@ class FlatRateExtension {
 			'class'       => 'wfs-calculation-enabled-checkbox',
 		);
 
+		$fields['wfs_coupon_handling'] = array(
+			'title'       => __( 'Coupons & Loyalty Vouchers', 'woo-flexible-shipping' ),
+			'type'        => 'select',
+			'class'       => 'wfs-coupon-handling-select',
+			'default'     => CalculationEngine::COUPON_MODE_INHERIT,
+			'options'     => array(
+				CalculationEngine::COUPON_MODE_INHERIT         => __( 'Use global plugin setting (Default)', 'woo-flexible-shipping' ),
+				CalculationEngine::COUPON_MODE_APPLY_ALL       => __( 'Deduct all coupons (net discounted amount)', 'woo-flexible-shipping' ),
+				CalculationEngine::COUPON_MODE_IGNORE_PATTERNS => __( 'Ignore specific coupons matching text patterns (e.g. loyalty)', 'woo-flexible-shipping' ),
+				CalculationEngine::COUPON_MODE_IGNORE_ALL      => __( 'Ignore all coupons (pre-discount subtotal)', 'woo-flexible-shipping' ),
+			),
+			'description' => __( 'Choose whether promo codes and loyalty vouchers reduce the cart amount used for shipping tiers.', 'woo-flexible-shipping' ),
+			'desc_tip'    => true,
+		);
+
+		$fields['wfs_ignored_coupon_patterns'] = array(
+			'title'       => __( 'Ignored Coupon Text Patterns', 'woo-flexible-shipping' ),
+			'type'        => 'text',
+			'class'       => 'wfs-ignored-coupon-patterns-input',
+			'placeholder' => __( 'e.g. 5EUR, 10EUR, FID', 'woo-flexible-shipping' ),
+			'default'     => '',
+			'description' => __( 'Comma-separated list of text fragments (case-insensitive). Any applied coupon containing one of these texts will not reduce the order amount for shipping calculations.', 'woo-flexible-shipping' ),
+			'desc_tip'    => true,
+		);
+
 		$is_dedicated_page = ( function_exists( 'is_admin' ) && is_admin() ) && isset( $_GET['instance_id'] );
 
 		if ( $is_dedicated_page || ( function_exists( 'is_admin' ) && ! is_admin() ) ) {
@@ -160,7 +185,7 @@ class FlatRateExtension {
 
 			$rules = is_array( $raw_rules ) ? $raw_rules : json_decode( (string) $raw_rules, true );
 
-			$result = $this->engine->calculate( $package, is_array( $rules ) ? $rules : array() );
+			$result = $this->engine->calculate( $package, is_array( $rules ) ? $rules : array(), $settings );
 
 			$base_cost = (float) $rate->cost;
 			$surcharge = (float) $result['surcharge'];
@@ -182,6 +207,12 @@ class FlatRateExtension {
 				'rule_applied'  => $rule_text,
 				'applied_rules' => $result['applied_rules'],
 			);
+
+			if ( ! empty( $result['metrics']['ignored_coupons'] ) && ( $result['metrics']['ignored_discount'] ?? 0.0 ) > 0.0 ) {
+				$breakdown['ignored_coupons']  = array_values( $result['metrics']['ignored_coupons'] );
+				$breakdown['ignored_discount'] = wc_price( (float) $result['metrics']['ignored_discount'] );
+				$breakdown['effective_price']  = wc_price( (float) $result['metrics']['price'] );
+			}
 
 			$rate->add_meta_data( 'fs_costs', json_encode( $breakdown, JSON_UNESCAPED_UNICODE ) );
 			$rate->add_meta_data( '_table_rate_costs', json_encode( $breakdown, JSON_UNESCAPED_UNICODE ) );
